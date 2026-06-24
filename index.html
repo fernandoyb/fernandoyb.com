@@ -3,767 +3,691 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fernando Yaguez-Bovio — AI Research Hub</title>
+<title>Fernando Yaguez-Bovio</title>
 <style>
-  /* ── Reset & base ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ink: #1a1a18;
-    --ink-mid: #4a4a46;
-    --ink-light: #8a8a84;
-    --paper: #f7f5f0;
-    --paper-warm: #eeeae0;
-    --rule: #c8c4b8;
-    --amber: #c17f24;
-    --amber-light: #faeeda;
-    --amber-text: #7a4f0e;
-    --teal: #0d6e56;
-    --teal-light: #e1f5ee;
-    --serif: Georgia, 'Palatino Linotype', Palatino, serif;
-    --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --mono: 'Courier New', Courier, monospace;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1a1a18;--ink-mid:#4a4a46;--ink-light:#8a8a84;
+  --paper:#f7f5f0;--paper-warm:#eeeae0;--rule:#c8c4b8;
+  --amber:#c17f24;--amber-light:#faeeda;--amber-text:#7a4f0e;
+  --teal:#0d6e56;--teal-light:#e1f5ee;
+  --serif:Georgia,"Palatino Linotype",Palatino,serif;
+  --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"Courier New",Courier,monospace;
+}
+html{font-size:16px;background:var(--paper);color:var(--ink);}
+body{font-family:var(--sans);min-height:100vh;}
 
-  html { font-size: 16px; background: var(--paper); color: var(--ink); }
-  body { font-family: var(--sans); min-height: 100vh; }
+/* ── Canvas background ── */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.35;}
 
-  /* ── Masthead ── */
-  .masthead {
-    border-bottom: 3px double var(--ink);
-    padding: 1.5rem 2rem 1rem;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: end;
-    gap: 1rem;
-  }
-  .masthead-meta { font-family: var(--sans); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); line-height: 1.7; }
-  .masthead-meta a { color: var(--ink-mid); text-decoration: none; }
-  .masthead-meta a:hover { color: var(--amber); }
-  .masthead-title { text-align: center; }
-  .masthead-title h1 { font-family: var(--serif); font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; color: var(--ink); }
-  .masthead-title .subtitle { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mid); margin-top: 0.3rem; }
-  .masthead-right { text-align: right; }
+/* ── All content above canvas ── */
+.site-wrap{position:relative;z-index:1;}
 
-  /* ── Nav ── */
-  nav {
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    gap: 0;
-    background: var(--paper);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  nav button {
-    font-family: var(--sans);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: var(--ink-mid);
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-  }
-  nav button:hover { color: var(--ink); }
-  nav button.active { color: var(--amber); border-bottom-color: var(--amber); }
+/* ── Masthead ── */
+.masthead{
+  border-bottom:3px double var(--ink);
+  padding:1.25rem 2rem 0.9rem;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:end;gap:1rem;
+  background:rgba(247,245,240,0.92);
+  backdrop-filter:blur(4px);
+}
+.masthead-meta{font-family:var(--sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mid);line-height:1.8;}
+.masthead-meta a{color:var(--ink-mid);text-decoration:none;}
+.masthead-meta a:hover{color:var(--amber);}
+.masthead-title{text-align:center;}
+.masthead-title h1{font-family:var(--serif);font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;letter-spacing:-0.01em;line-height:1.1;color:var(--ink);}
+.masthead-title .subtitle{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-mid);margin-top:0.25rem;}
+.masthead-right{text-align:right;}
 
-  /* ── Layout ── */
-  .page { display: none; max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
-  .page.active { display: block; }
+/* ── Nav ── */
+nav{
+  border-bottom:1px solid var(--rule);display:flex;gap:0;flex-wrap:wrap;
+  background:rgba(247,245,240,0.95);backdrop-filter:blur(4px);
+  position:sticky;top:0;z-index:100;
+}
+nav button{
+  font-family:var(--sans);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;
+  padding:0.7rem 1.1rem;border:none;background:transparent;cursor:pointer;color:var(--ink-mid);
+  border-bottom:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;
+}
+nav button:hover{color:var(--ink);}
+nav button.active{color:var(--amber);border-bottom-color:var(--amber);}
 
-  /* ── Section rules ── */
-  .section-rule { display: flex; align-items: center; gap: 0.75rem; margin: 2.5rem 0 1.25rem; }
-  .section-rule span { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); white-space: nowrap; }
-  .section-rule::before, .section-rule::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
-  .section-rule::before { max-width: 1.5rem; }
+/* ── Pages ── */
+.page{display:none;max-width:860px;margin:0 auto;padding:3rem 2rem 5rem;}
+.page.active{display:block;}
 
-  /* ── Digest tab ── */
-  .digest-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 2rem; }
-  .btn-primary {
-    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
-    padding: 0.65rem 1.5rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-primary:hover { background: var(--amber); }
-  .btn-primary:disabled { background: var(--ink-light); cursor: not-allowed; }
-  .btn-secondary {
-    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
-    padding: 0.65rem 1.25rem; background: transparent; color: var(--ink); border: 1px solid var(--rule); cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-  }
-  .btn-secondary:hover { border-color: var(--ink); }
+/* ── Section rule ── */
+.section-rule{display:flex;align-items:center;gap:0.75rem;margin:2.5rem 0 1.25rem;}
+.section-rule span{font-family:var(--sans);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;color:var(--ink-mid);white-space:nowrap;}
+.section-rule::before,.section-rule::after{content:"";flex:1;height:1px;background:var(--rule);}
+.section-rule::before{max-width:1.5rem;}
 
-  .week-label { font-family: var(--mono); font-size: 12px; color: var(--ink-mid); }
+/* ════════════════ HOME ════════════════ */
+.home-hero{display:grid;grid-template-columns:auto 1fr;gap:3rem;align-items:start;padding-top:1rem;}
+@media(max-width:600px){.home-hero{grid-template-columns:1fr;text-align:center;}}
 
-  /* Archive list */
-  .archive-list { border-top: 1px solid var(--rule); }
-  .archive-item {
-    border-bottom: 1px solid var(--rule);
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 0.75rem 0; cursor: pointer; transition: background 0.1s;
-  }
-  .archive-item:hover { background: var(--paper-warm); padding-left: 0.5rem; }
-  .archive-item .week-key { font-family: var(--mono); font-size: 12px; color: var(--ink-mid); }
-  .archive-item .week-sum { font-family: var(--serif); font-size: 14px; color: var(--ink); }
-  .archive-item .week-arrow { color: var(--amber); font-size: 18px; }
+.hero-photo{
+  width:160px;height:160px;border-radius:50%;
+  object-fit:cover;object-position:center top;
+  border:3px solid var(--rule);
+  flex-shrink:0;
+}
+@media(max-width:600px){.hero-photo{margin:0 auto;}}
 
-  /* Digest display */
-  .digest-display { display: none; }
-  .digest-display.visible { display: block; }
+.hero-text{}
+.hero-name{font-family:var(--serif);font-size:2rem;font-weight:700;line-height:1.1;margin-bottom:0.2rem;}
+.hero-tagline{font-family:var(--sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:1.1rem;}
+.hero-blurb{font-family:var(--serif);font-size:1rem;line-height:1.8;color:var(--ink-mid);margin-bottom:1.25rem;}
+.hero-blurb span{color:var(--ink);font-weight:700;}
 
-  .digest-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 2rem; }
-  .digest-header .issue-line { font-family: var(--mono); font-size: 11px; color: var(--ink-mid); margin-bottom: 0.5rem; display: flex; gap: 1rem; }
-  .digest-header h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
-  .digest-summary { font-family: var(--serif); font-size: 1.05rem; line-height: 1.7; color: var(--ink-mid); font-style: italic; margin: 1rem 0 0; border-left: 3px solid var(--amber); padding-left: 1rem; }
+.socials{display:flex;gap:1.25rem;align-items:center;margin-bottom:1.75rem;}
+@media(max-width:600px){.socials{justify-content:center;}}
+.social-link{color:var(--ink-mid);text-decoration:none;transition:color 0.15s;}
+.social-link:hover{color:var(--amber);}
+.social-link svg{width:22px;height:22px;fill:currentColor;}
 
-  /* Section groups */
-  .digest-section { margin-bottom: 2.5rem; }
-  .digest-section-header {
-    display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer; padding-bottom: 0.5rem; border-bottom: 1px solid var(--rule);
-    margin-bottom: 1rem;
-  }
-  .digest-section-header h3 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink); }
-  .digest-section-header .chevron { color: var(--ink-light); font-size: 18px; transition: transform 0.2s; }
-  .digest-section-header.open .chevron { transform: rotate(180deg); }
-  .digest-section-body { display: none; }
-  .digest-section-body.open { display: block; }
+/* Area cards */
+.areas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:0.5rem;}
+.area-card{
+  padding:1.1rem 1.25rem;border:0.5px solid var(--rule);
+  background:rgba(247,245,240,0.7);cursor:pointer;
+  transition:border-color 0.15s,background 0.15s;
+}
+.area-card:hover{border-color:var(--amber);background:var(--amber-light);}
+.area-card h3{font-family:var(--serif);font-size:0.95rem;font-weight:700;margin-bottom:0.3rem;color:var(--ink);}
+.area-card p{font-size:12px;color:var(--ink-mid);line-height:1.5;}
 
-  /* Finding cards */
-  .finding-card { padding: 1rem 0; border-bottom: 1px solid var(--paper-warm); }
-  .finding-card:last-child { border-bottom: none; }
-  .finding-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
-  .finding-title a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
-  .finding-title a:hover { border-bottom-color: var(--amber); color: var(--amber); }
-  .finding-source { font-family: var(--sans); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.5rem; }
-  .finding-detail { font-size: 14px; line-height: 1.7; color: var(--ink-mid); }
-  .data-angle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 11px; font-weight: 600; background: var(--amber-light); color: var(--amber-text); padding: 0.25rem 0.6rem; margin-top: 0.6rem; }
+/* ════════════════ MANAGEMENT ════════════════ */
+.content-section{margin-bottom:3rem;}
+.content-section h2{font-family:var(--serif);font-size:1.5rem;font-weight:700;margin-bottom:1rem;line-height:1.2;}
+.content-body{font-family:var(--serif);font-size:1rem;line-height:1.85;color:var(--ink-mid);}
+.content-body p{margin-bottom:1rem;}
+.content-body h3{font-family:var(--sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;color:var(--ink);margin:1.5rem 0 0.5rem;}
+.content-body ul{margin-left:1.25rem;margin-bottom:1rem;}
+.content-body ul li{margin-bottom:0.4rem;}
+.placeholder-text{font-family:var(--serif);font-style:italic;color:var(--ink-light);font-size:0.95rem;padding:2rem;border:1px dashed var(--rule);text-align:center;line-height:1.7;}
 
-  /* Job cards */
-  .job-card { padding: 1.25rem; border: 1px solid var(--rule); margin-bottom: 1rem; background: var(--paper); }
-  .job-card:hover { border-color: var(--amber); }
-  .job-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
-  .job-title a { color: var(--ink); text-decoration: none; }
-  .job-title a:hover { color: var(--amber); }
-  .job-meta { font-size: 11px; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; }
-  .job-detail { font-size: 13px; line-height: 1.6; color: var(--ink-mid); }
+/* ════════════════ DIGEST ════════════════ */
+.digest-controls{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:2rem;}
+.btn-primary{
+  font-family:var(--sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;
+  padding:0.65rem 1.5rem;background:var(--ink);color:var(--paper);border:none;cursor:pointer;transition:background 0.15s;
+}
+.btn-primary:hover{background:var(--amber);}
+.btn-primary:disabled{background:var(--ink-light);cursor:not-allowed;}
+.btn-secondary{
+  font-family:var(--sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;
+  padding:0.65rem 1.25rem;background:transparent;color:var(--ink);border:1px solid var(--rule);cursor:pointer;
+  transition:border-color 0.15s,color 0.15s;
+}
+.btn-secondary:hover{border-color:var(--ink);}
+.week-label{font-family:var(--mono);font-size:12px;color:var(--ink-mid);}
+.archive-list{border-top:1px solid var(--rule);}
+.archive-item{border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;cursor:pointer;transition:padding-left 0.15s;}
+.archive-item:hover{padding-left:0.5rem;}
+.archive-item .week-key{font-family:var(--mono);font-size:12px;color:var(--ink-mid);}
+.archive-item .week-sum{font-family:var(--serif);font-size:13px;color:var(--ink);}
+.archive-item .week-arrow{color:var(--amber);font-size:18px;}
+.digest-display{display:none;}
+.digest-display.visible{display:block;}
+.digest-header{border-bottom:2px solid var(--ink);padding-bottom:1rem;margin-bottom:2rem;}
+.digest-header .issue-line{font-family:var(--mono);font-size:11px;color:var(--ink-mid);margin-bottom:0.5rem;display:flex;gap:1rem;}
+.digest-header h2{font-family:var(--serif);font-size:1.8rem;font-weight:700;line-height:1.2;}
+.digest-summary{font-family:var(--serif);font-size:1.05rem;line-height:1.7;color:var(--ink-mid);font-style:italic;margin:1rem 0 0;border-left:3px solid var(--amber);padding-left:1rem;}
+.digest-section{margin-bottom:2.5rem;}
+.digest-section-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:0.5rem;border-bottom:1px solid var(--rule);margin-bottom:1rem;}
+.digest-section-header h3{font-family:var(--sans);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;color:var(--ink);}
+.digest-section-header .chevron{color:var(--ink-light);font-size:18px;transition:transform 0.2s;}
+.digest-section-header.open .chevron{transform:rotate(180deg);}
+.digest-section-body{display:none;}
+.digest-section-body.open{display:block;}
+.finding-card{padding:1rem 0;border-bottom:1px solid var(--paper-warm);}
+.finding-card:last-child{border-bottom:none;}
+.finding-title{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:0.3rem;}
+.finding-title a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);}
+.finding-title a:hover{border-bottom-color:var(--amber);color:var(--amber);}
+.finding-source{font-family:var(--sans);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);margin-bottom:0.4rem;}
+.finding-detail{font-size:13px;line-height:1.7;color:var(--ink-mid);}
+.data-angle{display:inline-flex;align-items:center;gap:0.4rem;font-size:11px;font-weight:600;background:var(--amber-light);color:var(--amber-text);padding:0.25rem 0.6rem;margin-top:0.5rem;}
+.job-card{padding:1.1rem;border:0.5px solid var(--rule);margin-bottom:0.75rem;}
+.job-card:hover{border-color:var(--amber);}
+.job-title{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:0.2rem;}
+.job-title a{color:var(--ink);text-decoration:none;}
+.job-title a:hover{color:var(--amber);}
+.job-meta{font-size:11px;color:var(--ink-light);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.4rem;}
+.job-detail{font-size:13px;line-height:1.6;color:var(--ink-mid);}
+.loading-state{text-align:center;padding:4rem 2rem;}
+.loading-spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--rule);border-top-color:var(--amber);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-state p{font-family:var(--serif);font-style:italic;color:var(--ink-mid);}
+.error-state{background:#fff3f3;border-left:3px solid #c00;padding:1rem 1.25rem;font-size:14px;color:#600;margin:1rem 0;}
+.empty-archive{text-align:center;padding:3rem 1rem;color:var(--ink-mid);}
+.empty-archive p{font-family:var(--serif);font-style:italic;font-size:1.05rem;margin-bottom:0.5rem;}
 
-  /* Loading */
-  .loading-state { text-align: center; padding: 4rem 2rem; }
-  .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--rule); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-state p { font-family: var(--serif); font-style: italic; color: var(--ink-mid); }
-  .error-state { background: #fff3f3; border-left: 3px solid #c00; padding: 1rem 1.25rem; font-size: 14px; color: #600; margin: 1rem 0; }
+/* ════════════════ COMMANDMENTS / FRAMEWORKS / THINGS ════════════════ */
+.list-table{width:100%;border-collapse:collapse;margin-top:0.5rem;}
+.list-table th{font-family:var(--sans);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:var(--ink-mid);padding:0.5rem 0.75rem;border-bottom:1.5px solid var(--ink);text-align:left;}
+.list-table td{font-size:13px;padding:0.7rem 0.75rem;border-bottom:1px solid var(--paper-warm);vertical-align:top;color:var(--ink-mid);line-height:1.6;}
+.list-table td:first-child{font-family:var(--serif);font-weight:700;color:var(--ink);font-size:14px;width:35%;}
+.list-table tr:hover td{background:var(--amber-light);}
+.list-table a{color:var(--amber-text);text-decoration:none;border-bottom:1px solid var(--amber-light);}
+.list-table a:hover{border-bottom-color:var(--amber);}
 
-  /* ── About tab ── */
-  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
-  @media (max-width: 640px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
+.things-table td:first-child{width:20%;font-size:12px;font-family:var(--sans);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-light);}
 
-  .about-bio { grid-column: 1 / -1; }
-  .bio-name { font-family: var(--serif); font-size: 2.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 0.25rem; }
-  .bio-tagline { font-family: var(--sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); font-weight: 700; margin-bottom: 1.25rem; }
-  .bio-text { font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--ink-mid); }
+/* ════════════════ ABOUT ════════════════ */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+@media(max-width:640px){.about-grid{grid-template-columns:1fr;gap:2rem;}}
+.bio-name{font-family:var(--serif);font-size:2rem;font-weight:700;line-height:1.1;margin-bottom:0.25rem;}
+.bio-tagline{font-family:var(--sans);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:1.25rem;}
+.bio-text{font-family:var(--serif);font-size:1rem;line-height:1.85;color:var(--ink-mid);}
+.bio-edit-btn{font-family:var(--sans);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:0.4rem 0.9rem;background:transparent;border:1px solid var(--rule);color:var(--ink-mid);cursor:pointer;margin-top:1rem;display:inline-block;}
+.bio-edit-btn:hover{border-color:var(--ink);color:var(--ink);}
+.bio-edit-area{width:100%;min-height:120px;font-family:var(--serif);font-size:1rem;line-height:1.7;border:1px solid var(--rule);padding:0.75rem;background:var(--paper);color:var(--ink);resize:vertical;margin-top:0.75rem;display:none;}
+.bio-save-btn{font-family:var(--sans);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.4rem 0.9rem;background:var(--ink);color:var(--paper);border:none;cursor:pointer;margin-top:0.5rem;display:none;}
+.cv-section h4{font-family:var(--sans);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;color:var(--ink-mid);margin-bottom:0.75rem;padding-bottom:0.3rem;border-bottom:1px solid var(--rule);}
+.cv-role{margin-bottom:1.1rem;}
+.cv-role-title{font-family:var(--serif);font-size:0.9rem;font-weight:700;color:var(--ink);}
+.cv-role-co{font-size:12px;color:var(--ink-mid);}
+.cv-role-date{font-family:var(--mono);font-size:11px;color:var(--ink-light);margin-bottom:0.3rem;}
+.cv-role-detail{font-size:12px;line-height:1.6;color:var(--ink-mid);}
+.contact-list{list-style:none;}
+.contact-list li{font-size:13px;padding:0.4rem 0;border-bottom:1px solid var(--paper-warm);display:flex;gap:0.5rem;}
+.contact-list li:last-child{border-bottom:none;}
+.contact-list .cl{font-family:var(--sans);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);min-width:70px;}
+.contact-list a{color:var(--amber-text);text-decoration:none;}
+.contact-list a:hover{text-decoration:underline;}
 
-  .bio-edit-btn { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid var(--rule); color: var(--ink-mid); cursor: pointer; margin-top: 1rem; display: inline-block; }
-  .bio-edit-btn:hover { border-color: var(--ink); color: var(--ink); }
-  .bio-edit-area { width: 100%; min-height: 120px; font-family: var(--serif); font-size: 1rem; line-height: 1.7; border: 1px solid var(--rule); padding: 0.75rem; background: var(--paper); color: var(--ink); resize: vertical; margin-top: 0.75rem; display: none; }
-  .bio-save-btn { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding: 0.4rem 0.9rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer; margin-top: 0.5rem; display: none; }
+/* ════════════════ SKILLS ════════════════ */
+.skills-intro{font-family:var(--serif);font-style:italic;color:var(--ink-mid);margin-bottom:2rem;line-height:1.7;}
+.tag-group{margin-bottom:2rem;}
+.tag-group h4{font-family:var(--sans);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;color:var(--ink-mid);margin-bottom:0.75rem;padding-bottom:0.3rem;border-bottom:1px solid var(--rule);}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:8px;}
+.skill-tag{font-family:var(--sans);font-size:12px;font-weight:600;padding:5px 12px;cursor:pointer;border:1px solid transparent;transition:all 0.15s;user-select:none;}
+.skill-tag[data-level="high"]{background:var(--teal-light);color:var(--teal);border-color:#9fe1cb;}
+.skill-tag[data-level="mid"]{background:var(--amber-light);color:var(--amber-text);border-color:#fac775;}
+.skill-tag[data-level="low"]{background:#eeedfe;color:#3c3489;border-color:#cecbf6;}
+.skill-tag:hover{transform:translateY(-1px);opacity:0.85;}
+.tag-legend{display:flex;gap:1.5rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--rule);flex-wrap:wrap;}
+.tag-legend span{font-size:12px;color:var(--ink-mid);display:flex;align-items:center;gap:0.4rem;}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.legend-dot.high{background:var(--teal);}
+.legend-dot.mid{background:var(--amber);}
+.legend-dot.low{background:#534ab7;}
+.add-skill-row{display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap;}
+.add-skill-row input{font-family:var(--sans);font-size:13px;padding:0.5rem 0.75rem;border:1px solid var(--rule);background:var(--paper);color:var(--ink);flex:1;min-width:180px;}
+.add-skill-row select{font-family:var(--sans);font-size:13px;padding:0.5rem 0.75rem;border:1px solid var(--rule);background:var(--paper);color:var(--ink);}
+.add-skill-row button{font-family:var(--sans);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;padding:0.5rem 1rem;background:var(--ink);color:var(--paper);border:none;cursor:pointer;}
+.add-skill-row button:hover{background:var(--amber);}
 
-  /* CV sections */
-  .cv-section h4 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); margin-bottom: 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
-  .cv-role { margin-bottom: 1.25rem; }
-  .cv-role-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 700; color: var(--ink); }
-  .cv-role-co { font-size: 12px; color: var(--ink-mid); margin-bottom: 0.25rem; }
-  .cv-role-date { font-family: var(--mono); font-size: 11px; color: var(--ink-light); margin-bottom: 0.4rem; }
-  .cv-role-detail { font-size: 13px; line-height: 1.6; color: var(--ink-mid); }
-
-  .contact-list { list-style: none; }
-  .contact-list li { font-size: 13px; padding: 0.4rem 0; border-bottom: 1px solid var(--paper-warm); display: flex; gap: 0.5rem; }
-  .contact-list li:last-child { border-bottom: none; }
-  .contact-list .cl { font-family: var(--sans); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); min-width: 60px; }
-  .contact-list a { color: var(--amber-text); text-decoration: none; }
-  .contact-list a:hover { text-decoration: underline; }
-
-  /* ── Skills tab ── */
-  .skills-intro { font-family: var(--serif); font-style: italic; color: var(--ink-mid); margin-bottom: 2rem; line-height: 1.7; font-size: 1rem; }
-
-  .tag-group { margin-bottom: 2rem; }
-  .tag-group h4 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); margin-bottom: 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
-  .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .skill-tag {
-    font-family: var(--sans); font-size: 12px; font-weight: 600;
-    padding: 5px 12px; cursor: pointer; border: 1px solid transparent;
-    transition: all 0.15s; user-select: none;
-  }
-  .skill-tag[data-level="high"] { background: var(--teal-light); color: var(--teal); border-color: #9fe1cb; }
-  .skill-tag[data-level="mid"] { background: var(--amber-light); color: var(--amber-text); border-color: #fac775; }
-  .skill-tag[data-level="low"] { background: #eeedfe; color: #3c3489; border-color: #cec bf6; }
-  .skill-tag:hover { opacity: 0.8; transform: translateY(-1px); }
-  .skill-tag[data-level="high"]:hover { border-color: var(--teal); }
-  .skill-tag[data-level="mid"]:hover { border-color: var(--amber); }
-  .skill-tag[data-level="low"]:hover { border-color: #534ab7; }
-
-  .tag-legend { display: flex; gap: 1.5rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); flex-wrap: wrap; }
-  .tag-legend span { font-size: 12px; color: var(--ink-mid); display: flex; align-items: center; gap: 0.4rem; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .legend-dot.high { background: var(--teal); }
-  .legend-dot.mid { background: var(--amber); }
-  .legend-dot.low { background: #534ab7; }
-
-  .add-skill-row { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
-  .add-skill-row input { font-family: var(--sans); font-size: 13px; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); flex: 1; min-width: 180px; }
-  .add-skill-row select { font-family: var(--sans); font-size: 13px; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
-  .add-skill-row button { font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; padding: 0.5rem 1rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer; }
-  .add-skill-row button:hover { background: var(--amber); }
-
-  /* Empty state */
-  .empty-archive { text-align: center; padding: 3rem 1rem; color: var(--ink-mid); }
-  .empty-archive p { font-family: var(--serif); font-style: italic; font-size: 1.1rem; margin-bottom: 0.5rem; }
-  .empty-archive small { font-size: 12px; }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    .masthead { grid-template-columns: 1fr; text-align: center; }
-    .masthead-right { text-align: center; }
-    .page { padding: 1.5rem 1rem 3rem; }
-  }
+@media(max-width:600px){
+  .masthead{grid-template-columns:1fr;text-align:center;}
+  .masthead-right{text-align:center;}
+  .page{padding:1.5rem 1rem 3rem;}
+  nav button{font-size:9px;padding:0.6rem 0.7rem;}
+}
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
+<div class="site-wrap">
 
 <header class="masthead">
   <div class="masthead-meta">
     <div id="masthead-week"></div>
     <div>San Francisco, CA</div>
-    <div><a href="mailto:fernandoyaguezbovio@gmail.com">fernandoyaguezbovio@gmail.com</a></div>
+    
   </div>
   <div class="masthead-title">
     <h1>Fernando Yaguez-Bovio</h1>
-    <div class="subtitle">AI Research Digest &amp; Professional Portfolio</div>
+    <div class="subtitle">Strategy &amp; Operations · AI Research · Human Data</div>
   </div>
   <div class="masthead-right masthead-meta">
-    <div>Strategy &amp; Operations Leader</div>
-    <div>Human Data Programs Focus</div>
-    <div>+1 628 309 0360</div>
+    
+    <div>Full rights: UK · EU · Argentina</div>
+    <div>EN · ES · IT · FR</div>
   </div>
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('digest')">Digest</button>
-  <button onclick="showTab('about')">About</button>
-  <button onclick="showTab('skills')">Skills &amp; Interests</button>
+  <button class="active" onclick="showTab('home',this)">Home</button>
+  <button onclick="showTab('management',this)">Management &amp; Leadership</button>
+  <button onclick="showTab('digest',this)">Superintelligence Digest</button>
+  <button onclick="showTab('commandments',this)">Commandments</button>
+  <button onclick="showTab('frameworks',this)">Frameworks</button>
+  <button onclick="showTab('things',this)">Things I Love</button>
+  <button onclick="showTab('about',this)">CV &amp; Contact</button>
 </nav>
 
-<!-- ═══════════════════════════════════════════ DIGEST TAB ══ -->
-<div id="tab-digest" class="page active">
+<!-- ══════════════════════════════ HOME ══ -->
+<div id="tab-home" class="page active">
+  <div class="home-hero">
+    <img src="data:image/jpeg;base64,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" alt="Fernando Yaguez-Bovio" class="hero-photo">
+    <div class="hero-text">
+      <div class="hero-name"></div>
+      <div class="hero-tagline"></div>
+      <div class="hero-blurb"></div>
+      <div class="socials">
+        <a href="https://www.linkedin.com/in/fernandoyaguezbovio" target="_blank" class="social-link" title="LinkedIn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://www.goodreads.com/user/show/100505473-fernando-yaguez-bovio" target="_blank" class="social-link" title="Goodreads">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.43 23.995c-3.608-.208-6.274-2.077-6.448-5.078.695.007 1.375-.013 2.07-.006.224 1.342 1.065 2.43 2.683 3.026 1.583.496 3.737.46 5.082-.174 1.351-.636 2.145-1.822 2.503-3.476.212-.963.236-1.fabric.23-3.08l-.059-.063c-1.955 3.898-7.802 4.624-11.025 1.4C4.495 14.765 4.03 12.41 4.317 10.027c.285-2.37 1.478-4.34 3.498-5.453 1.944-1.07 5.391-1.407 7.545.587l.095.088.08-1.021c.695-.007 1.375.006 2.07 0 .016 3.642.016 7.292-.016 10.93-.034 1.874-.199 3.816-1.41 5.306-1.388 1.755-3.668 2.459-6.35 2.531h.601zm.055-7.853c1.886-.055 3.545-1.044 4.215-2.752.81-2.017.617-5.453-1.14-6.972-1.496-1.28-4.57-1.326-6.085.069-1.724 1.572-1.9 5.56-.394 7.365.826 1.01 2.178 1.335 3.404 1.29z"/></svg>
+        </a>
+      </div>
+
+      <div class="section-rule" style="margin-top:0.5rem;"><span>Explore</span></div>
+      <div class="areas-grid">
+        <div class="area-card" onclick="showTabByName('management')">
+          <h3>Management &amp; Leadership</h3>
+          <p>Operational excellence, values, and how I think about building teams</p>
+        </div>
+        <div class="area-card" onclick="showTabByName('digest')">
+          <h3>Road to Superintelligence</h3>
+          <p>Weekly digest tracking frontier labs and the six paradigm clusters</p>
+        </div>
+        <div class="area-card" onclick="showTabByName('commandments')">
+          <h3>Commandments for Scaling</h3>
+          <p>Hard-won principles from building across three continents</p>
+        </div>
+        <div class="area-card" onclick="showTabByName('frameworks')">
+          <h3>Frameworks That Actually Help</h3>
+          <p>Mental models I return to. No eye-rolling required.</p>
+        </div>
+        <div class="area-card" onclick="showTabByName('things')">
+          <h3>Things I Love</h3>
+          <p>Articles, podcasts, books and ideas that have shaped how I think</p>
+        </div>
+        <div class="area-card" onclick="showTabByName('about')">
+          <h3>CV &amp; Contact</h3>
+          <p>Full experience, education, languages, and how to reach me</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ MANAGEMENT ══ -->
+<div id="tab-management" class="page">
+  <div class="section-rule"><span>Management &amp; Leadership</span></div>
+
+  <div class="content-section">
+    <h2>Defining Operational Excellence</h2>
+    <div class="placeholder-text">
+      This section is coming soon. Add your thoughts on operational excellence — what it means, how you build it, and what you've learned leading teams across Turo UK, Australia, and the US.
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2>Personal &amp; Management Values</h2>
+    <div class="placeholder-text">
+      This section is coming soon. Share the values that guide how you lead — transparency, empowerment, accountability — and how they've shaped the teams you've built.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ DIGEST ══ -->
+<div id="tab-digest" class="page">
+  <div class="section-rule"><span>The Road to Superintelligence — Weekly Digest</span></div>
+  <p style="font-family:var(--serif);font-style:italic;color:var(--ink-mid);margin-bottom:2rem;line-height:1.7;font-size:0.95rem;">
+    A personal research log tracking frontier AI labs, the six paradigm clusters racing toward superintelligence, human data operations, and job market signals. Generated weekly via live web search.
+  </p>
 
   <div class="digest-controls">
     <button class="btn-primary" id="gen-btn" onclick="generateDigest()">Generate this week's digest</button>
     <span class="week-label" id="current-week-label"></span>
-    <button class="btn-secondary" onclick="showArchive()" id="archive-btn">View archive</button>
+    <button class="btn-secondary" onclick="showArchive()">View archive</button>
   </div>
 
   <div id="loading-state" class="loading-state" style="display:none;">
     <div class="loading-spinner"></div>
     <p>Searching the frontier — this takes about a minute…</p>
   </div>
-
   <div id="error-state" class="error-state" style="display:none;"></div>
-
-  <div id="digest-display" class="digest-display">
-    <!-- populated by JS -->
-  </div>
-
+  <div id="digest-display" class="digest-display"></div>
   <div id="archive-panel">
     <div class="section-rule"><span>Archive</span></div>
     <div id="archive-list" class="archive-list"></div>
   </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ ABOUT TAB ══ -->
-<div id="tab-about" class="page">
+<!-- ══════════════════════════════ COMMANDMENTS ══ -->
+<div id="tab-commandments" class="page">
+  <div class="section-rule"><span>Commandments for Scaling Startups</span></div>
+  <p style="font-family:var(--serif);font-style:italic;color:var(--ink-mid);margin-bottom:2rem;line-height:1.7;">
+    Principles and quotes I return to when building. Sourced from people who've done it.
+  </p>
+  <table class="list-table">
+    <thead><tr><th>Source</th><th>Principle</th></tr></thead>
+    <tbody id="commandments-body">
+      <tr><td>First Round Staff<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">Give Away Your Legos</span></td><td>The best metaphor I have for scaling — give away your Legos and find joy in watching others build.</td></tr>
+      <tr><td>Jean de La Rochebrochard</td><td>Your level of intelligibility defines your level of influence.</td></tr>
+      <tr><td>Sheril Mathews<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">Why Netflix Let Go</span></td><td>Context assumes that people will make the right decisions when given the right information.</td></tr>
+      <tr><td>First Round Staff<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">Speed as a Habit</span></td><td>There are decisions that deserve days of reflection and there are decisions that deserve minutes.</td></tr>
+      <tr><td>Yamini Rangan<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">How to Build a Category</span></td><td>Make them talk about you at dinner tonight.</td></tr>
+      <tr><td>Do Things That Don't Scale</td><td>One of the most common types of advice we give at YC is to do things that don't scale.</td></tr>
+      <tr><td>Putting Ideas into Words</td><td>Can you ever know so much that you no longer have to learn?</td></tr>
+      <tr><td>First Round Staff<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">I'm Sorry, But…</span></td><td>Vanity metrics are points of comparison that make you feel good without telling you anything about the health of your business.</td></tr>
+      <tr><td>First Round Staff<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">Radical Candor</span></td><td>The source of everything respectable in a person is directness.</td></tr>
+      <tr><td>Joseph Kelly<br><span style="font-weight:400;font-size:12px;font-family:var(--sans);">Startups, Secrets &amp; more</span></td><td>Abductive reasoning is critical to making good decisions under uncertainty.</td></tr>
+    </tbody>
+  </table>
+</div>
 
-  <div class="about-bio">
-    <div class="bio-name">Fernando Yaguez-Bovio</div>
-    <div class="bio-tagline">Strategy &amp; Operations Leader → Human Data Programs at Frontier AI Labs</div>
-    <div class="bio-text" id="bio-text">Versatile strategy and operations leader with a track record of end-to-end ownership across two international founding teams, scaling from zero to ~A$50M in annual GBV. Currently optimising Turo's $2Bn GMV P&L from San Francisco HQ, bringing together a background with P&L ownership, people leadership (teams of ~12), and hands-on SQL and AI workflow development. Targeting human data program manager roles at frontier AI labs, where my experience building operations from scratch, managing cross-functional programs, and working at the intersection of data quality and product outcomes translates directly to the annotation, RLHF, and scalable oversight challenges shaping the next generation of AI.</div>
-    <button class="bio-edit-btn" id="bio-edit-btn" onclick="toggleBioEdit()">Edit bio</button>
-    <textarea class="bio-edit-area" id="bio-edit-area"></textarea>
-    <button class="bio-save-btn" id="bio-save-btn" onclick="saveBio()">Save</button>
+<!-- ══════════════════════════════ FRAMEWORKS ══ -->
+<div id="tab-frameworks" class="page">
+  <div class="section-rule"><span>Frameworks That Actually Help</span></div>
+  <p style="font-family:var(--serif);font-style:italic;color:var(--ink-mid);margin-bottom:2rem;line-height:1.7;">
+    Mental models I actually use. If it makes me roll my eyes, it doesn't make the list.
+  </p>
+  <table class="list-table">
+    <thead><tr><th>Framework</th><th>Useful for</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://www.youtube.com/watch?v=example" target="_blank">Bain &amp; Company Insights</a></td><td>Insurgent culture, owner mindset, frontline mentality</td></tr>
+      <tr><td>Using the Stages of Team Development</td><td>Leading through forming, norming, storming, performing</td></tr>
+      <tr><td>What, So What?, Now What?</td><td>Structuring problem statements</td></tr>
+      <tr><td>The 5 Why's</td><td>Help reports get to the root cause of a problem</td></tr>
+      <tr><td>1-3-1</td><td>Guide reports to come to you with solutions, not problems</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════ THINGS I LOVE ══ -->
+<div id="tab-things" class="page">
+  <div class="section-rule"><span>Things I Love</span></div>
+  <p style="font-family:var(--serif);font-style:italic;color:var(--ink-mid);margin-bottom:2rem;line-height:1.7;">
+    Articles, podcasts, books, essays, and ideas that have shaped how I think.
+  </p>
+  <table class="list-table things-table">
+    <thead><tr><th>Source</th><th>What &amp; Why</th></tr></thead>
+    <tbody>
+      <tr><td>The Guardian</td><td><strong>How Uber conquered the world</strong> — Inspired me to go into startups.</td></tr>
+      <tr><td>Spotify</td><td><strong>Ex-Stripe CTO on leadership</strong> — The best podcast I've listened to regarding leadership and management.</td></tr>
+      <tr><td>Sam Altman</td><td><strong>How To Be Successful</strong></td></tr>
+      <tr><td>Nabeel S. Qureshi</td><td>"A cursed fact of the world is that the most important life lessons can't be taught."</td></tr>
+      <tr><td>Amazon Staff</td><td><strong>2016 Letter to Shareholders</strong> — Bezos' final shareholder letter at Amazon.</td></tr>
+      <tr><td>Paul Graham</td><td><strong>Essays</strong></td></tr>
+      <tr><td>Roger L Martin</td><td><strong>Medium Posts</strong> — Author of Playing to Win</td></tr>
+      <tr><td>Stanford</td><td><strong>Steve Jobs' 2005 Commencement</strong> — "The dots only connect when you look backwards."</td></tr>
+      <tr><td>WSJ</td><td><strong>Satya Nadella: 'The…'</strong> — Growth mindset</td></tr>
+      <tr><td>Spotify</td><td><strong>Operational Excellence</strong> — Cleo Sham interview</td></tr>
+      <tr><td>McCombs School of Business</td><td><strong>Bill Gurley speaking truths</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════ ABOUT / CV ══ -->
+<div id="tab-about" class="page">
+  <div class="about-grid" style="grid-column:1/-1;">
+    <div style="grid-column:1/-1;">
+      <div class="bio-name"></div>
+      <div class="bio-tagline"></div>
+      <div class="bio-text" id="bio-text"></div>
+      <button class="bio-edit-btn" id="bio-edit-btn" onclick="toggleBioEdit()">Edit bio</button>
+      <textarea class="bio-edit-area" id="bio-edit-area"></textarea>
+      <button class="bio-save-btn" id="bio-save-btn" onclick="saveBio()">Save</button>
+    </div>
   </div>
 
-  <div class="about-grid" style="margin-top: 2.5rem;">
-
+  <div class="about-grid" style="margin-top:2.5rem;">
     <div class="cv-section">
       <div class="section-rule"><span>Experience</span></div>
-
-      <div class="cv-role">
-        <div class="cv-role-title">Senior Strategy &amp; Planning Manager II</div>
-        <div class="cv-role-co">Turo — San Francisco, US</div>
-        <div class="cv-role-date">Jan 2026 – Present</div>
-        <div class="cv-role-detail">Founding member of US S&amp;P team; spearheading 17-member Cost Leadership Group across 8+ functions. Automated 50+ slide MBR using Claude Cowork, saving ~2–3 days per month.</div>
-      </div>
-
-      <div class="cv-role">
-        <div class="cv-role-title">Head of Operations</div>
-        <div class="cv-role-co">Turo — Australia</div>
-        <div class="cv-role-date">Oct 2022 – Dec 2025</div>
-        <div class="cv-role-detail">Founding member of Turo's fastest-growing market ever (~A$50M GBV). Full P&L ownership over COGS and variable OPEX. Built operations from scratch, led 12-person team, outperformed other markets' cost lines by up to 20%.</div>
-      </div>
-
-      <div class="cv-role">
-        <div class="cv-role-title">Strategy Manager / Senior BizDev</div>
-        <div class="cv-role-co">Turo — UK</div>
-        <div class="cv-role-date">Jul 2018 – Sep 2022</div>
-        <div class="cv-role-detail">Founding member of Turo UK (~£17M GBV run rate). Streamlined verification funnel, increasing new user conversion by 25pp. Chief of Staff to UK VP across Strategy, Analytics, Operations, and Insurance.</div>
-      </div>
-
-      <div class="section-rule" style="margin-top: 2rem;"><span>Education</span></div>
-      <div class="cv-role">
-        <div class="cv-role-title">BSc Economics &amp; Management (2:1)</div>
-        <div class="cv-role-co">University of Bristol</div>
-        <div class="cv-role-date">2014 – 2017</div>
-      </div>
+      
+      
+      
+      <div class="section-rule" style="margin-top:2rem;"><span>Education</span></div>
+      
     </div>
-
     <div class="cv-section">
       <div class="section-rule"><span>Contact</span></div>
-      <ul class="contact-list">
-        <li><span class="cl">Email</span><a href="mailto:fernandoyaguezbovio@gmail.com">fernandoyaguezbovio@gmail.com</a></li>
-        <li><span class="cl">Phone</span><span>+1 628 309 0360</span></li>
-        <li><span class="cl">Location</span><span>San Francisco, CA</span></li>
-        <li><span class="cl">Rights</span><span>UK · EU · Argentina</span></li>
-        <li><span class="cl">LinkedIn</span><a href="https://www.linkedin.com/in/fernandoyaguezbovio" target="_blank">linkedin.com/in/fernandoyaguezbovio</a></li>
-      </ul>
-
-      <div class="section-rule" style="margin-top: 2rem;"><span>Languages</span></div>
-      <ul class="contact-list">
-        <li><span class="cl">Native</span><span>English, Spanish</span></li>
-        <li><span class="cl">Advanced</span><span>Italian</span></li>
-        <li><span class="cl">Proficient</span><span>French</span></li>
-        <li><span class="cl">Conversational</span><span>Portuguese</span></li>
-      </ul>
-
-      <div class="section-rule" style="margin-top: 2rem;"><span>Other</span></div>
-      <ul class="contact-list">
-        <li><span class="cl">Mentorship</span><span>Startmate Launch Club</span></li>
-        <li><span class="cl">Courses</span><span>Startmate First Believers (Angel Investing), Manager Fellowship</span></li>
-        <li><span class="cl">Interests</span><span>Reading, music, history, swimming</span></li>
-      </ul>
+      
+      <div class="section-rule" style="margin-top:2rem;"><span>Languages</span></div>
+      
+      <div class="section-rule" style="margin-top:2rem;"><span>Other</span></div>
+      
     </div>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ SKILLS TAB ══ -->
-<div id="tab-skills" class="page">
-
-  <p class="skills-intro">Tracking my developing literacy across the human data operations and frontier AI research landscape — the knowledge base for a data program manager role at a top lab. Tap any tag to cycle its interest level.</p>
-
-  <div id="skills-container">
-    <!-- populated by JS -->
-  </div>
-
-  <div class="add-skill-row">
-    <input type="text" id="new-skill-input" placeholder="Add a skill or topic…" onkeydown="if(event.key==='Enter') addSkill()" />
-    <select id="new-skill-level">
-      <option value="high">High interest</option>
-      <option value="mid" selected>Medium interest</option>
-      <option value="low">Exploring</option>
-    </select>
-    <button onclick="addSkill()">Add</button>
-  </div>
-
-  <div class="tag-legend">
-    <span><span class="legend-dot high"></span> High interest / active focus</span>
-    <span><span class="legend-dot mid"></span> Medium / building knowledge</span>
-    <span><span class="legend-dot low"></span> Exploring / early stage</span>
-  </div>
-
-</div>
+</div><!-- /site-wrap -->
 
 <script>
-// ── Week utils ──────────────────────────────────────────────
-function getISOWeek(d) {
-  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const day = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  return { week: Math.ceil((((date - yearStart) / 86400000) + 1) / 7), year: date.getUTCFullYear() };
+// ── Particle background ──────────────────────────────────────
+(function(){
+  const canvas = document.getElementById("bg-canvas");
+  const ctx = canvas.getContext("2d");
+  let W, H, particles = [];
+  const COUNT = 55;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Particle(){
+    this.x = Math.random()*W;
+    this.y = Math.random()*H;
+    this.r = Math.random()*1.8+0.4;
+    this.vx = (Math.random()-0.5)*0.35;
+    this.vy = (Math.random()-0.5)*0.35;
+    this.alpha = Math.random()*0.5+0.15;
+  }
+
+  function init(){
+    resize();
+    particles = Array.from({length:COUNT}, ()=>new Particle());
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Draw connection lines
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x;
+        const dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){
+          ctx.beginPath();
+          ctx.strokeStyle=`rgba(26,26,24,${0.06*(1-dist/140)})`;
+          ctx.lineWidth=0.5;
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw dots
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(193,127,36,${p.alpha})`;
+      ctx.fill();
+    });
+  }
+
+  function update(){
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+    });
+  }
+
+  function loop(){requestAnimationFrame(loop);update();draw();}
+  window.addEventListener("resize",resize);
+  init();
+  loop();
+})();
+
+// ── Week utils ───────────────────────────────────────────────
+function getISOWeek(d){
+  const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const day=date.getUTCDay()||7;
+  date.setUTCDate(date.getUTCDate()+4-day);
+  const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return{week:Math.ceil((((date-yearStart)/86400000)+1)/7),year:date.getUTCFullYear()};
 }
-function currentWeekKey() {
-  const { week, year } = getISOWeek(new Date());
-  return `${year}-W${String(week).padStart(2, '0')}`;
+function currentWeekKey(){
+  const{week,year}=getISOWeek(new Date());
+  return`${year}-W${String(week).padStart(2,"0")}`;
 }
-function weekLabel(key) {
-  const [year, w] = key.split('-W');
-  return `Issue ${w} · ${year}`;
+function weekLabel(key){
+  const[year,w]=key.split("-W");
+  return`Issue ${w} · ${year}`;
 }
 
 // ── Tab navigation ───────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
+function showTab(name,btn){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  if(btn) btn.classList.add("active");
+  else document.querySelector(`[onclick*="showTab('${name}"]`)?.classList.add("active");
+}
+function showTabByName(name){
+  showTab(name);
+  document.querySelectorAll("nav button").forEach(b=>{
+    if(b.getAttribute("onclick")&&b.getAttribute("onclick").includes(`'${name}'`)) b.classList.add("active");
+  });
 }
 
-// ── Sections config ──────────────────────────────────────────
-const SECTIONS = [
-  {
-    id: 'frontier', label: 'Frontier Labs', color: '#1a1a18',
-    orgs: 'Anthropic, OpenAI, Google DeepMind, Meta AI, Mistral, xAI',
-    focus: 'Major model releases, safety research, capability advances, org announcements'
-  },
-  {
-    id: 'paradigms', label: 'Paradigm Clusters', color: '#0d6e56',
-    orgs: 'World Labs, AMI, Decart (world models); Recursive, Inherent (self-improvement); Ineffable Intelligence, Reflection (RL); Core Automation, Adaption Labs (continual learning); Inception Labs (diffusion); Logical Intelligence, Flapping Airplanes (EBMs)',
-    focus: 'Research advances in world models, recursive self-improvement, RL, continual learning, diffusion models, energy-based models'
-  },
-  {
-    id: 'human_data', label: 'Human Data & Operations', color: '#c17f24',
-    orgs: 'Scale AI, Surge, Labelbox, Appen, Prolific, Mostly AI, Gretel, LMSYS, EleutherAI, EU AI Office, NIST, Partnership on AI',
-    focus: 'Annotation pipelines, RLHF/RLAIF advances, synthetic data, evals design, AI governance, data quality frameworks'
-  },
-  {
-    id: 'jobs', label: 'Job Market', color: '#534ab7',
-    orgs: 'Anthropic, OpenAI, Google DeepMind, Meta AI, Scale AI, Cohere, Mistral',
-    focus: 'Data program manager, human data operations, annotation program manager, RLHF program manager roles — new postings, requirements, hiring signals'
-  }
+// ── Digest sections config ───────────────────────────────────
+const SECTIONS=[
+  {id:"frontier",label:"Frontier Labs",orgs:"Anthropic, OpenAI, Google DeepMind, Meta AI, Mistral, xAI",focus:"Major model releases, safety research, capability advances, org announcements"},
+  {id:"paradigms",label:"Paradigm Clusters",orgs:"World Labs, AMI, Decart (world models); Recursive, Inherent (self-improvement); Ineffable Intelligence, Reflection (RL); Core Automation, Adaption Labs (continual learning); Inception Labs (diffusion); Logical Intelligence, Flapping Airplanes (EBMs)",focus:"Research advances in world models, recursive self-improvement, RL, continual learning, diffusion models, energy-based models"},
+  {id:"human_data",label:"Human Data & Operations",orgs:"Scale AI, Surge, Labelbox, Appen, Prolific, Mostly AI, Gretel, LMSYS, EleutherAI, EU AI Office, NIST, Partnership on AI",focus:"Annotation pipelines, RLHF/RLAIF advances, synthetic data, evals design, AI governance, data quality frameworks"},
+  {id:"jobs",label:"Job Market",orgs:"Anthropic, OpenAI, Google DeepMind, Meta AI, Scale AI, Cohere, Mistral",focus:"Data program manager, human data operations, annotation program manager, RLHF program manager roles — new postings, requirements, hiring signals"}
 ];
 
-// ── Generate digest ──────────────────────────────────────────
-async function generateDigest() {
-  const weekKey = currentWeekKey();
-  const btn = document.getElementById('gen-btn');
-  const loading = document.getElementById('loading-state');
-  const errEl = document.getElementById('error-state');
+async function generateDigest(){
+  const weekKey=currentWeekKey();
+  const btn=document.getElementById("gen-btn");
+  const loading=document.getElementById("loading-state");
+  const errEl=document.getElementById("error-state");
+  btn.disabled=true;btn.textContent="Generating…";
+  loading.style.display="block";errEl.style.display="none";
+  document.getElementById("digest-display").classList.remove("visible");
+  document.getElementById("archive-panel").style.display="none";
 
-  btn.disabled = true;
-  btn.textContent = 'Generating…';
-  loading.style.display = 'block';
-  errEl.style.display = 'none';
-  document.getElementById('digest-display').classList.remove('visible');
-  document.getElementById('archive-panel').style.display = 'none';
-
-  const systemPrompt = `You are a research analyst specialising in frontier AI labs, human data operations, and the AI job market. You produce a structured weekly digest for a senior strategy and operations professional targeting data program manager roles at frontier AI labs.
-
-Return ONLY valid JSON, no preamble, no markdown fences. Structure:
-{
-  "week": "<week key>",
-  "summary": "<2-3 sentence editorial summary of the week's most important themes>",
-  "sections": [
-    {
-      "id": "<section id>",
-      "label": "<section label>",
-      "findings": [
-        {
-          "title": "<finding headline>",
-          "source": "<publication or org name>",
-          "url": "<url if available, else null>",
-          "detail": "<2-3 sentence summary of the finding>",
-          "data_angle": "<1 sentence on relevance to human data operations or data program management, or null if not applicable>"
-        }
-      ]
-    }
-  ]
-}
-
-Include 3-5 findings per section. For the Job Market section, each finding is a job posting or hiring signal — include role title, company, and any notable requirements.`;
-
-  const userPrompt = `Generate the weekly AI research digest for ${weekKey} (week ending ${new Date().toDateString()}).
-
-Cover these four sections:
-${SECTIONS.map(s => `
-Section id: ${s.id}
+  const systemPrompt=`You are a research analyst specialising in frontier AI labs, human data operations, and the AI job market. Produce a structured weekly digest for a senior strategy and operations professional targeting data program manager roles at frontier AI labs. Return ONLY valid JSON, no preamble, no markdown fences. Structure: {"week":"<key>","summary":"<2-3 sentence editorial summary>","sections":[{"id":"<id>","label":"<label>","findings":[{"title":"<headline>","source":"<pub or org>","url":"<url or null>","detail":"<2-3 sentence summary>","data_angle":"<relevance to human data ops or null>"}]}]}. Include 3-5 findings per section. For the Job Market section, each finding is a job posting or hiring signal.`;
+  const userPrompt=`Generate the weekly AI research digest for ${weekKey} (week ending ${new Date().toDateString()}). Cover these four sections:
+${SECTIONS.map(s=>`Section id: ${s.id}
 Section label: ${s.label}
-Organisations to track: ${s.orgs}
-Focus: ${s.focus}`).join('\n')}
+Orgs: ${s.orgs}
+Focus: ${s.focus}`).join("
 
-Use web search to find the most recent developments (last 7 days where possible). Highlight anything with a 📌 data angle — i.e. relevance to human data programs, annotation operations, RLHF pipelines, synthetic data, or evals.`;
+")}
+Use web search for the most recent developments. Flag data angles with relevance to human data programs, annotation, RLHF, synthetic data, or evals.`;
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4000,tools:[{type:"web_search_20250305",name:"web_search"}],system:systemPrompt,messages:[{role:"user",content:userPrompt}]})
     });
-
-    if (!res.ok) throw new Error(`API error ${res.status}`);
-    const data = await res.json();
-
-    // Extract JSON from response
-    const textBlocks = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    const data=await res.json();
+    const textBlocks=data.content.filter(b=>b.type==="text").map(b=>b.text).join("");
     let digest;
-    try {
-      digest = JSON.parse(textBlocks.replace(/```json|```/g, '').trim());
-    } catch {
-      const match = textBlocks.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('Could not parse response as JSON');
-      digest = JSON.parse(match[0]);
-    }
-
-    digest.week = weekKey;
-    digest.generated = new Date().toISOString();
-
-    // Save to localStorage
-    const saved = getSavedDigests();
-    saved[weekKey] = digest;
-    localStorage.setItem('digests', JSON.stringify(saved));
-
-    renderDigest(digest);
-    loading.style.display = 'none';
-    btn.disabled = false;
-    btn.textContent = 'Regenerate this week';
-
-  } catch (err) {
-    loading.style.display = 'none';
-    errEl.style.display = 'block';
-    errEl.textContent = `Error generating digest: ${err.message}`;
-    btn.disabled = false;
-    btn.textContent = 'Generate this week\'s digest';
-    document.getElementById('archive-panel').style.display = 'block';
+    try{digest=JSON.parse(textBlocks.replace(/```json|```/g,"").trim());}
+    catch{const m=textBlocks.match(/\{[\s\S]*\}/);if(!m)throw new Error("Could not parse JSON");digest=JSON.parse(m[0]);}
+    digest.week=weekKey;digest.generated=new Date().toISOString();
+    const saved=getSavedDigests();saved[weekKey]=digest;
+    localStorage.setItem("digests",JSON.stringify(saved));
+    renderDigest(digest);loading.style.display="none";
+    btn.disabled=false;btn.textContent="Regenerate this week";
+  }catch(err){
+    loading.style.display="none";errEl.style.display="block";
+    errEl.textContent=`Error generating digest: ${err.message}`;
+    btn.disabled=false;btn.textContent="Generate this week's digest";
+    document.getElementById("archive-panel").style.display="block";
   }
 }
 
-// ── Render digest ────────────────────────────────────────────
-function renderDigest(digest) {
-  const el = document.getElementById('digest-display');
-  const sectionColors = Object.fromEntries(SECTIONS.map(s => [s.id, s.color]));
-
-  let html = `
-    <div class="digest-header">
-      <div class="issue-line">
-        <span>${weekLabel(digest.week)}</span>
-        <span>Generated ${new Date(digest.generated).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}</span>
-      </div>
-      <h2>Weekly AI Research Digest</h2>
-      ${digest.summary ? `<div class="digest-summary">${digest.summary}</div>` : ''}
-    </div>`;
-
-  (digest.sections || []).forEach((section, i) => {
-    const isJobs = section.id === 'jobs';
-    html += `
-      <div class="digest-section">
-        <div class="digest-section-header ${i === 0 ? 'open' : ''}" onclick="toggleSection(this)">
-          <h3>${section.label}</h3>
-          <span class="chevron">&#8964;</span>
-        </div>
-        <div class="digest-section-body ${i === 0 ? 'open' : ''}">`;
-
-    (section.findings || []).forEach(f => {
-      if (isJobs) {
-        html += `
-          <div class="job-card">
-            <div class="job-title">${f.url ? `<a href="${f.url}" target="_blank">${f.title}</a>` : f.title}</div>
-            <div class="job-meta">${f.source}</div>
-            <div class="job-detail">${f.detail}</div>
-            ${f.data_angle ? `<div class="data-angle">📌 ${f.data_angle}</div>` : ''}
-          </div>`;
-      } else {
-        html += `
-          <div class="finding-card">
-            <div class="finding-source">${f.source}</div>
-            <div class="finding-title">${f.url ? `<a href="${f.url}" target="_blank">${f.title}</a>` : f.title}</div>
-            <div class="finding-detail">${f.detail}</div>
-            ${f.data_angle ? `<div class="data-angle">📌 ${f.data_angle}</div>` : ''}
-          </div>`;
-      }
+function renderDigest(digest){
+  const el=document.getElementById("digest-display");
+  let html=`<div class="digest-header"><div class="issue-line"><span>${weekLabel(digest.week)}</span><span>Generated ${new Date(digest.generated).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}</span></div><h2>Weekly AI Research Digest</h2>${digest.summary?`<div class="digest-summary">${digest.summary}</div>`:""}</div>`;
+  (digest.sections||[]).forEach((section,i)=>{
+    const isJobs=section.id==="jobs";
+    html+=`<div class="digest-section"><div class="digest-section-header ${i===0?"open":""}" onclick="toggleSection(this)"><h3>${section.label}</h3><span class="chevron">&#8964;</span></div><div class="digest-section-body ${i===0?"open":""}">`;
+    (section.findings||[]).forEach(f=>{
+      if(isJobs) html+=`<div class="job-card"><div class="job-title">${f.url?`<a href="${f.url}" target="_blank">${f.title}</a>`:f.title}</div><div class="job-meta">${f.source}</div><div class="job-detail">${f.detail}</div>${f.data_angle?`<div class="data-angle">📌 ${f.data_angle}</div>`:""}</div>`;
+      else html+=`<div class="finding-card"><div class="finding-source">${f.source}</div><div class="finding-title">${f.url?`<a href="${f.url}" target="_blank">${f.title}</a>`:f.title}</div><div class="finding-detail">${f.detail}</div>${f.data_angle?`<div class="data-angle">📌 ${f.data_angle}</div>`:""}</div>`;
     });
-
-    html += `</div></div>`;
+    html+=`</div></div>`;
   });
-
-  el.innerHTML = html;
-  el.classList.add('visible');
-  document.getElementById('archive-panel').style.display = 'none';
+  el.innerHTML=html;el.classList.add("visible");
+  document.getElementById("archive-panel").style.display="none";
 }
 
-function toggleSection(header) {
-  header.classList.toggle('open');
-  header.nextElementSibling.classList.toggle('open');
+function toggleSection(header){header.classList.toggle("open");header.nextElementSibling.classList.toggle("open");}
+
+function getSavedDigests(){try{return JSON.parse(localStorage.getItem("digests")||"{}");}catch{return{};}}
+
+function showArchive(){
+  const saved=getSavedDigests();
+  const el=document.getElementById("archive-list");
+  const keys=Object.keys(saved).sort().reverse();
+  if(!keys.length){el.innerHTML=`<div class="empty-archive"><p>No digests saved yet.</p><small>Generate your first digest above.</small></div>`;}
+  else{el.innerHTML=keys.map(k=>{const d=saved[k];const sum=d.summary?d.summary.substring(0,80)+"…":"";return`<div class="archive-item" onclick="loadDigest('${k}')"><div><div class="week-key">${weekLabel(k)}</div><div class="week-sum">${sum}</div></div><span class="week-arrow">→</span></div>`;}).join("");}
+  document.getElementById("archive-panel").style.display="block";
+  document.getElementById("digest-display").classList.remove("visible");
 }
 
-// ── Archive ──────────────────────────────────────────────────
-function getSavedDigests() {
-  try { return JSON.parse(localStorage.getItem('digests') || '{}'); } catch { return {}; }
-}
-
-function showArchive() {
-  const saved = getSavedDigests();
-  const el = document.getElementById('archive-list');
-  const keys = Object.keys(saved).sort().reverse();
-
-  if (!keys.length) {
-    el.innerHTML = `<div class="empty-archive"><p>No digests saved yet.</p><small>Generate your first digest above to start building your archive.</small></div>`;
-  } else {
-    el.innerHTML = keys.map(k => {
-      const d = saved[k];
-      const sum = d.summary ? d.summary.substring(0, 80) + '…' : '';
-      return `<div class="archive-item" onclick="loadDigest('${k}')">
-        <div>
-          <div class="week-key">${weekLabel(k)}</div>
-          <div class="week-sum">${sum}</div>
-        </div>
-        <span class="week-arrow">→</span>
-      </div>`;
-    }).join('');
-  }
-
-  document.getElementById('archive-panel').style.display = 'block';
-  document.getElementById('digest-display').classList.remove('visible');
-}
-
-function loadDigest(key) {
-  const saved = getSavedDigests();
-  if (saved[key]) renderDigest(saved[key]);
-}
+function loadDigest(key){const saved=getSavedDigests();if(saved[key])renderDigest(saved[key]);}
 
 // ── Bio editing ──────────────────────────────────────────────
-const DEFAULT_BIO = `Versatile strategy and operations leader with a track record of end-to-end ownership across two international founding teams, scaling from zero to ~A$50M in annual GBV. Currently optimising Turo's $2Bn GMV P&L from San Francisco HQ, bringing together a background with P&L ownership, people leadership (teams of ~12), and hands-on SQL and AI workflow development. Targeting human data program manager roles at frontier AI labs, where my experience building operations from scratch, managing cross-functional programs, and working at the intersection of data quality and product outcomes translates directly to the annotation, RLHF, and scalable oversight challenges shaping the next generation of AI.`;
-
-function toggleBioEdit() {
-  const area = document.getElementById('bio-edit-area');
-  const saveBtn = document.getElementById('bio-save-btn');
-  const editBtn = document.getElementById('bio-edit-btn');
-  const text = document.getElementById('bio-text');
-  if (area.style.display === 'none' || !area.style.display) {
-    area.value = text.textContent;
-    area.style.display = 'block';
-    saveBtn.style.display = 'inline-block';
-    editBtn.textContent = 'Cancel';
-  } else {
-    area.style.display = 'none';
-    saveBtn.style.display = 'none';
-    editBtn.textContent = 'Edit bio';
-  }
+function toggleBioEdit(){
+  const area=document.getElementById("bio-edit-area");
+  const saveBtn=document.getElementById("bio-save-btn");
+  const editBtn=document.getElementById("bio-edit-btn");
+  const text=document.getElementById("bio-text");
+  if(area.style.display==="none"||!area.style.display){area.value=text.textContent;area.style.display="block";saveBtn.style.display="inline-block";editBtn.textContent="Cancel";}
+  else{area.style.display="none";saveBtn.style.display="none";editBtn.textContent="Edit bio";}
 }
-
-function saveBio() {
-  const area = document.getElementById('bio-edit-area');
-  const text = document.getElementById('bio-text');
-  text.textContent = area.value;
-  localStorage.setItem('bio', area.value);
-  area.style.display = 'none';
-  document.getElementById('bio-save-btn').style.display = 'none';
-  document.getElementById('bio-edit-btn').textContent = 'Edit bio';
+function saveBio(){
+  const area=document.getElementById("bio-edit-area");
+  const text=document.getElementById("bio-text");
+  text.textContent=area.value;localStorage.setItem("bio",area.value);
+  area.style.display="none";document.getElementById("bio-save-btn").style.display="none";document.getElementById("bio-edit-btn").textContent="Edit bio";
 }
 
 // ── Skills ───────────────────────────────────────────────────
-const DEFAULT_SKILLS = {
-  'Human Data Operations': [
-    { name: 'RLHF pipeline design', level: 'high' },
-    { name: 'Annotation quality frameworks', level: 'high' },
-    { name: 'Scalable oversight', level: 'mid' },
-    { name: 'Synthetic data pipelines', level: 'mid' },
-    { name: 'RLAIF & constitutional AI', level: 'mid' },
-    { name: 'Evals design', level: 'low' },
-    { name: 'Data labelling operations', level: 'high' },
-  ],
-  'Frontier Research': [
-    { name: 'World models', level: 'mid' },
-    { name: 'Recursive self-improvement', level: 'low' },
-    { name: 'Reinforcement learning', level: 'mid' },
-    { name: 'Continual learning', level: 'low' },
-    { name: 'Diffusion models', level: 'low' },
-    { name: 'Energy-based models', level: 'low' },
-  ],
-  'Program Management': [
-    { name: 'Cross-functional program leadership', level: 'high' },
-    { name: 'P&L ownership', level: 'high' },
-    { name: 'Vendor & BPO management', level: 'high' },
-    { name: 'Offshore outsourcing', level: 'high' },
-    { name: 'SQL & data analysis', level: 'mid' },
-    { name: 'AI workflow automation', level: 'mid' },
-    { name: 'OKR & MBR frameworks', level: 'high' },
-  ],
-  'AI Policy & Governance': [
-    { name: 'AI safety fundamentals', level: 'low' },
-    { name: 'EU AI Act', level: 'low' },
-    { name: 'NIST AI RMF', level: 'low' },
-    { name: 'Responsible AI practices', level: 'mid' },
-  ]
-};
-
-const LEVEL_CYCLE = ['high', 'mid', 'low'];
-
-function getSkills() {
-  try {
-    const s = localStorage.getItem('skills');
-    return s ? JSON.parse(s) : DEFAULT_SKILLS;
-  } catch { return DEFAULT_SKILLS; }
+const DEFAULT_SKILLS={"Human Data Operations":[{name:"RLHF pipeline design",level:"high"},{name:"Annotation quality frameworks",level:"high"},{name:"Scalable oversight",level:"mid"},{name:"Synthetic data pipelines",level:"mid"},{name:"RLAIF & constitutional AI",level:"mid"},{name:"Evals design",level:"low"},{name:"Data labelling operations",level:"high"}],"Frontier Research":[{name:"World models",level:"mid"},{name:"Recursive self-improvement",level:"low"},{name:"Reinforcement learning",level:"mid"},{name:"Continual learning",level:"low"},{name:"Diffusion models",level:"low"},{name:"Energy-based models",level:"low"}],"Program Management":[{name:"Cross-functional program leadership",level:"high"},{name:"P&L ownership",level:"high"},{name:"Vendor & BPO management",level:"high"},{name:"SQL & data analysis",level:"mid"},{name:"AI workflow automation",level:"mid"},{name:"OKR & MBR frameworks",level:"high"}],"AI Policy & Governance":[{name:"AI safety fundamentals",level:"low"},{name:"EU AI Act",level:"low"},{name:"Responsible AI practices",level:"mid"}]};
+const LEVEL_CYCLE=["high","mid","low"];
+function getSkills(){try{const s=localStorage.getItem("skills");return s?JSON.parse(s):DEFAULT_SKILLS;}catch{return DEFAULT_SKILLS;}}
+function saveSkills(s){localStorage.setItem("skills",JSON.stringify(s));}
+function renderSkills(){
+  const skills=getSkills();
+  const container=document.getElementById("skills-container");
+  if(!container)return;
+  container.innerHTML=Object.entries(skills).map(([group,tags])=>`<div class="tag-group"><h4>${group}</h4><div class="tags-wrap">${tags.map((t,i)=>`<span class="skill-tag" data-level="${t.level}" data-group="${group}" data-index="${i}" onclick="cycleSkill(this)">${t.name}</span>`).join("")}</div></div>`).join("");
 }
-
-function saveSkills(skills) {
-  localStorage.setItem('skills', JSON.stringify(skills));
+function cycleSkill(el){
+  const group=el.dataset.group;const idx=parseInt(el.dataset.index);
+  const skills=getSkills();const current=skills[group][idx].level;
+  const next=LEVEL_CYCLE[(LEVEL_CYCLE.indexOf(current)+1)%LEVEL_CYCLE.length];
+  skills[group][idx].level=next;saveSkills(skills);renderSkills();
 }
-
-function renderSkills() {
-  const skills = getSkills();
-  const container = document.getElementById('skills-container');
-  container.innerHTML = Object.entries(skills).map(([group, tags]) => `
-    <div class="tag-group">
-      <h4>${group}</h4>
-      <div class="tags-wrap">
-        ${tags.map((t, i) => `
-          <span class="skill-tag" data-level="${t.level}" data-group="${group}" data-index="${i}" onclick="cycleSkill(this)">${t.name}</span>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-function cycleSkill(el) {
-  const group = el.dataset.group;
-  const idx = parseInt(el.dataset.index);
-  const skills = getSkills();
-  const current = skills[group][idx].level;
-  const next = LEVEL_CYCLE[(LEVEL_CYCLE.indexOf(current) + 1) % LEVEL_CYCLE.length];
-  skills[group][idx].level = next;
-  saveSkills(skills);
-  renderSkills();
-}
-
-function addSkill() {
-  const input = document.getElementById('new-skill-input');
-  const level = document.getElementById('new-skill-level').value;
-  const name = input.value.trim();
-  if (!name) return;
-  const skills = getSkills();
-  const group = 'Human Data Operations';
-  if (!skills[group]) skills[group] = [];
-  skills[group].push({ name, level });
-  saveSkills(skills);
-  renderSkills();
-  input.value = '';
+function addSkill(){
+  const input=document.getElementById("new-skill-input");
+  const level=document.getElementById("new-skill-level").value;
+  const name=input.value.trim();if(!name)return;
+  const skills=getSkills();if(!skills["Human Data Operations"])skills["Human Data Operations"]=[];
+  skills["Human Data Operations"].push({name,level});saveSkills(skills);renderSkills();input.value="";
 }
 
 // ── Init ─────────────────────────────────────────────────────
-(function init() {
-  const wk = currentWeekKey();
-  document.getElementById('masthead-week').textContent = weekLabel(wk);
-  document.getElementById('current-week-label').textContent = wk;
-
-  // Restore bio
-  const savedBio = localStorage.getItem('bio');
-  if (savedBio) document.getElementById('bio-text').textContent = savedBio;
-
-  // Render skills
+(function init(){
+  const wk=currentWeekKey();
+  document.getElementById("masthead-week").textContent=weekLabel(wk);
+  document.getElementById("current-week-label").textContent=wk;
+  const savedBio=localStorage.getItem("bio");
+  if(savedBio)document.getElementById("bio-text").textContent=savedBio;
   renderSkills();
-
-  // Show archive on digest tab load
   showArchive();
 })();
 </script>
