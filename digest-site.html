@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fernando Yaguez-Bovio — AI Research Hub</title>
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1a18;
+    --ink-mid: #4a4a46;
+    --ink-light: #8a8a84;
+    --paper: #f7f5f0;
+    --paper-warm: #eeeae0;
+    --rule: #c8c4b8;
+    --amber: #c17f24;
+    --amber-light: #faeeda;
+    --amber-text: #7a4f0e;
+    --teal: #0d6e56;
+    --teal-light: #e1f5ee;
+    --serif: Georgia, 'Palatino Linotype', Palatino, serif;
+    --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono: 'Courier New', Courier, monospace;
+  }
+
+  html { font-size: 16px; background: var(--paper); color: var(--ink); }
+  body { font-family: var(--sans); min-height: 100vh; }
+
+  /* ── Masthead ── */
+  .masthead {
+    border-bottom: 3px double var(--ink);
+    padding: 1.5rem 2rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 1rem;
+  }
+  .masthead-meta { font-family: var(--sans); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); line-height: 1.7; }
+  .masthead-meta a { color: var(--ink-mid); text-decoration: none; }
+  .masthead-meta a:hover { color: var(--amber); }
+  .masthead-title { text-align: center; }
+  .masthead-title h1 { font-family: var(--serif); font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; color: var(--ink); }
+  .masthead-title .subtitle { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mid); margin-top: 0.3rem; }
+  .masthead-right { text-align: right; }
+
+  /* ── Nav ── */
+  nav {
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 0;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav button {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--ink-mid);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav button:hover { color: var(--ink); }
+  nav button.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+  /* ── Layout ── */
+  .page { display: none; max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+  .page.active { display: block; }
+
+  /* ── Section rules ── */
+  .section-rule { display: flex; align-items: center; gap: 0.75rem; margin: 2.5rem 0 1.25rem; }
+  .section-rule span { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); white-space: nowrap; }
+  .section-rule::before, .section-rule::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .section-rule::before { max-width: 1.5rem; }
+
+  /* ── Digest tab ── */
+  .digest-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 2rem; }
+  .btn-primary {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    padding: 0.65rem 1.5rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--amber); }
+  .btn-primary:disabled { background: var(--ink-light); cursor: not-allowed; }
+  .btn-secondary {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+    padding: 0.65rem 1.25rem; background: transparent; color: var(--ink); border: 1px solid var(--rule); cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--ink); }
+
+  .week-label { font-family: var(--mono); font-size: 12px; color: var(--ink-mid); }
+
+  /* Archive list */
+  .archive-list { border-top: 1px solid var(--rule); }
+  .archive-item {
+    border-bottom: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0; cursor: pointer; transition: background 0.1s;
+  }
+  .archive-item:hover { background: var(--paper-warm); padding-left: 0.5rem; }
+  .archive-item .week-key { font-family: var(--mono); font-size: 12px; color: var(--ink-mid); }
+  .archive-item .week-sum { font-family: var(--serif); font-size: 14px; color: var(--ink); }
+  .archive-item .week-arrow { color: var(--amber); font-size: 18px; }
+
+  /* Digest display */
+  .digest-display { display: none; }
+  .digest-display.visible { display: block; }
+
+  .digest-header { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 2rem; }
+  .digest-header .issue-line { font-family: var(--mono); font-size: 11px; color: var(--ink-mid); margin-bottom: 0.5rem; display: flex; gap: 1rem; }
+  .digest-header h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+  .digest-summary { font-family: var(--serif); font-size: 1.05rem; line-height: 1.7; color: var(--ink-mid); font-style: italic; margin: 1rem 0 0; border-left: 3px solid var(--amber); padding-left: 1rem; }
+
+  /* Section groups */
+  .digest-section { margin-bottom: 2.5rem; }
+  .digest-section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; padding-bottom: 0.5rem; border-bottom: 1px solid var(--rule);
+    margin-bottom: 1rem;
+  }
+  .digest-section-header h3 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink); }
+  .digest-section-header .chevron { color: var(--ink-light); font-size: 18px; transition: transform 0.2s; }
+  .digest-section-header.open .chevron { transform: rotate(180deg); }
+  .digest-section-body { display: none; }
+  .digest-section-body.open { display: block; }
+
+  /* Finding cards */
+  .finding-card { padding: 1rem 0; border-bottom: 1px solid var(--paper-warm); }
+  .finding-card:last-child { border-bottom: none; }
+  .finding-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .finding-title a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .finding-title a:hover { border-bottom-color: var(--amber); color: var(--amber); }
+  .finding-source { font-family: var(--sans); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.5rem; }
+  .finding-detail { font-size: 14px; line-height: 1.7; color: var(--ink-mid); }
+  .data-angle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 11px; font-weight: 600; background: var(--amber-light); color: var(--amber-text); padding: 0.25rem 0.6rem; margin-top: 0.6rem; }
+
+  /* Job cards */
+  .job-card { padding: 1.25rem; border: 1px solid var(--rule); margin-bottom: 1rem; background: var(--paper); }
+  .job-card:hover { border-color: var(--amber); }
+  .job-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .job-title a { color: var(--ink); text-decoration: none; }
+  .job-title a:hover { color: var(--amber); }
+  .job-meta { font-size: 11px; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .job-detail { font-size: 13px; line-height: 1.6; color: var(--ink-mid); }
+
+  /* Loading */
+  .loading-state { text-align: center; padding: 4rem 2rem; }
+  .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--rule); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-state p { font-family: var(--serif); font-style: italic; color: var(--ink-mid); }
+  .error-state { background: #fff3f3; border-left: 3px solid #c00; padding: 1rem 1.25rem; font-size: 14px; color: #600; margin: 1rem 0; }
+
+  /* ── About tab ── */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  @media (max-width: 640px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+  .about-bio { grid-column: 1 / -1; }
+  .bio-name { font-family: var(--serif); font-size: 2.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 0.25rem; }
+  .bio-tagline { font-family: var(--sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); font-weight: 700; margin-bottom: 1.25rem; }
+  .bio-text { font-family: var(--serif); font-size: 1.05rem; line-height: 1.8; color: var(--ink-mid); }
+
+  .bio-edit-btn { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid var(--rule); color: var(--ink-mid); cursor: pointer; margin-top: 1rem; display: inline-block; }
+  .bio-edit-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .bio-edit-area { width: 100%; min-height: 120px; font-family: var(--serif); font-size: 1rem; line-height: 1.7; border: 1px solid var(--rule); padding: 0.75rem; background: var(--paper); color: var(--ink); resize: vertical; margin-top: 0.75rem; display: none; }
+  .bio-save-btn { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding: 0.4rem 0.9rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer; margin-top: 0.5rem; display: none; }
+
+  /* CV sections */
+  .cv-section h4 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); margin-bottom: 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
+  .cv-role { margin-bottom: 1.25rem; }
+  .cv-role-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .cv-role-co { font-size: 12px; color: var(--ink-mid); margin-bottom: 0.25rem; }
+  .cv-role-date { font-family: var(--mono); font-size: 11px; color: var(--ink-light); margin-bottom: 0.4rem; }
+  .cv-role-detail { font-size: 13px; line-height: 1.6; color: var(--ink-mid); }
+
+  .contact-list { list-style: none; }
+  .contact-list li { font-size: 13px; padding: 0.4rem 0; border-bottom: 1px solid var(--paper-warm); display: flex; gap: 0.5rem; }
+  .contact-list li:last-child { border-bottom: none; }
+  .contact-list .cl { font-family: var(--sans); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); min-width: 60px; }
+  .contact-list a { color: var(--amber-text); text-decoration: none; }
+  .contact-list a:hover { text-decoration: underline; }
+
+  /* ── Skills tab ── */
+  .skills-intro { font-family: var(--serif); font-style: italic; color: var(--ink-mid); margin-bottom: 2rem; line-height: 1.7; font-size: 1rem; }
+
+  .tag-group { margin-bottom: 2rem; }
+  .tag-group h4 { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--ink-mid); margin-bottom: 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .skill-tag {
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    padding: 5px 12px; cursor: pointer; border: 1px solid transparent;
+    transition: all 0.15s; user-select: none;
+  }
+  .skill-tag[data-level="high"] { background: var(--teal-light); color: var(--teal); border-color: #9fe1cb; }
+  .skill-tag[data-level="mid"] { background: var(--amber-light); color: var(--amber-text); border-color: #fac775; }
+  .skill-tag[data-level="low"] { background: #eeedfe; color: #3c3489; border-color: #cec bf6; }
+  .skill-tag:hover { opacity: 0.8; transform: translateY(-1px); }
+  .skill-tag[data-level="high"]:hover { border-color: var(--teal); }
+  .skill-tag[data-level="mid"]:hover { border-color: var(--amber); }
+  .skill-tag[data-level="low"]:hover { border-color: #534ab7; }
+
+  .tag-legend { display: flex; gap: 1.5rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); flex-wrap: wrap; }
+  .tag-legend span { font-size: 12px; color: var(--ink-mid); display: flex; align-items: center; gap: 0.4rem; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-dot.high { background: var(--teal); }
+  .legend-dot.mid { background: var(--amber); }
+  .legend-dot.low { background: #534ab7; }
+
+  .add-skill-row { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .add-skill-row input { font-family: var(--sans); font-size: 13px; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); flex: 1; min-width: 180px; }
+  .add-skill-row select { font-family: var(--sans); font-size: 13px; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+  .add-skill-row button { font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; padding: 0.5rem 1rem; background: var(--ink); color: var(--paper); border: none; cursor: pointer; }
+  .add-skill-row button:hover { background: var(--amber); }
+
+  /* Empty state */
+  .empty-archive { text-align: center; padding: 3rem 1rem; color: var(--ink-mid); }
+  .empty-archive p { font-family: var(--serif); font-style: italic; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .empty-archive small { font-size: 12px; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .masthead { grid-template-columns: 1fr; text-align: center; }
+    .masthead-right { text-align: center; }
+    .page { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-meta">
+    <div id="masthead-week"></div>
+    <div>San Francisco, CA</div>
+    <div><a href="mailto:fernandoyaguezbovio@gmail.com">fernandoyaguezbovio@gmail.com</a></div>
+  </div>
+  <div class="masthead-title">
+    <h1>Fernando Yaguez-Bovio</h1>
+    <div class="subtitle">AI Research Digest &amp; Professional Portfolio</div>
+  </div>
+  <div class="masthead-right masthead-meta">
+    <div>Strategy &amp; Operations Leader</div>
+    <div>Human Data Programs Focus</div>
+    <div>+1 628 309 0360</div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('digest')">Digest</button>
+  <button onclick="showTab('about')">About</button>
+  <button onclick="showTab('skills')">Skills &amp; Interests</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════ DIGEST TAB ══ -->
+<div id="tab-digest" class="page active">
+
+  <div class="digest-controls">
+    <button class="btn-primary" id="gen-btn" onclick="generateDigest()">Generate this week's digest</button>
+    <span class="week-label" id="current-week-label"></span>
+    <button class="btn-secondary" onclick="showArchive()" id="archive-btn">View archive</button>
+  </div>
+
+  <div id="loading-state" class="loading-state" style="display:none;">
+    <div class="loading-spinner"></div>
+    <p>Searching the frontier — this takes about a minute…</p>
+  </div>
+
+  <div id="error-state" class="error-state" style="display:none;"></div>
+
+  <div id="digest-display" class="digest-display">
+    <!-- populated by JS -->
+  </div>
+
+  <div id="archive-panel">
+    <div class="section-rule"><span>Archive</span></div>
+    <div id="archive-list" class="archive-list"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ ABOUT TAB ══ -->
+<div id="tab-about" class="page">
+
+  <div class="about-bio">
+    <div class="bio-name">Fernando Yaguez-Bovio</div>
+    <div class="bio-tagline">Strategy &amp; Operations Leader → Human Data Programs at Frontier AI Labs</div>
+    <div class="bio-text" id="bio-text">Versatile strategy and operations leader with a track record of end-to-end ownership across two international founding teams, scaling from zero to ~A$50M in annual GBV. Currently optimising Turo's $2Bn GMV P&L from San Francisco HQ, bringing together a background with P&L ownership, people leadership (teams of ~12), and hands-on SQL and AI workflow development. Targeting human data program manager roles at frontier AI labs, where my experience building operations from scratch, managing cross-functional programs, and working at the intersection of data quality and product outcomes translates directly to the annotation, RLHF, and scalable oversight challenges shaping the next generation of AI.</div>
+    <button class="bio-edit-btn" id="bio-edit-btn" onclick="toggleBioEdit()">Edit bio</button>
+    <textarea class="bio-edit-area" id="bio-edit-area"></textarea>
+    <button class="bio-save-btn" id="bio-save-btn" onclick="saveBio()">Save</button>
+  </div>
+
+  <div class="about-grid" style="margin-top: 2.5rem;">
+
+    <div class="cv-section">
+      <div class="section-rule"><span>Experience</span></div>
+
+      <div class="cv-role">
+        <div class="cv-role-title">Senior Strategy &amp; Planning Manager II</div>
+        <div class="cv-role-co">Turo — San Francisco, US</div>
+        <div class="cv-role-date">Jan 2026 – Present</div>
+        <div class="cv-role-detail">Founding member of US S&amp;P team; spearheading 17-member Cost Leadership Group across 8+ functions. Automated 50+ slide MBR using Claude Cowork, saving ~2–3 days per month.</div>
+      </div>
+
+      <div class="cv-role">
+        <div class="cv-role-title">Head of Operations</div>
+        <div class="cv-role-co">Turo — Australia</div>
+        <div class="cv-role-date">Oct 2022 – Dec 2025</div>
+        <div class="cv-role-detail">Founding member of Turo's fastest-growing market ever (~A$50M GBV). Full P&L ownership over COGS and variable OPEX. Built operations from scratch, led 12-person team, outperformed other markets' cost lines by up to 20%.</div>
+      </div>
+
+      <div class="cv-role">
+        <div class="cv-role-title">Strategy Manager / Senior BizDev</div>
+        <div class="cv-role-co">Turo — UK</div>
+        <div class="cv-role-date">Jul 2018 – Sep 2022</div>
+        <div class="cv-role-detail">Founding member of Turo UK (~£17M GBV run rate). Streamlined verification funnel, increasing new user conversion by 25pp. Chief of Staff to UK VP across Strategy, Analytics, Operations, and Insurance.</div>
+      </div>
+
+      <div class="section-rule" style="margin-top: 2rem;"><span>Education</span></div>
+      <div class="cv-role">
+        <div class="cv-role-title">BSc Economics &amp; Management (2:1)</div>
+        <div class="cv-role-co">University of Bristol</div>
+        <div class="cv-role-date">2014 – 2017</div>
+      </div>
+    </div>
+
+    <div class="cv-section">
+      <div class="section-rule"><span>Contact</span></div>
+      <ul class="contact-list">
+        <li><span class="cl">Email</span><a href="mailto:fernandoyaguezbovio@gmail.com">fernandoyaguezbovio@gmail.com</a></li>
+        <li><span class="cl">Phone</span><span>+1 628 309 0360</span></li>
+        <li><span class="cl">Location</span><span>San Francisco, CA</span></li>
+        <li><span class="cl">Rights</span><span>UK · EU · Argentina</span></li>
+        <li><span class="cl">LinkedIn</span><a href="https://www.linkedin.com/in/fernandoyaguezbovio" target="_blank">linkedin.com/in/fernandoyaguezbovio</a></li>
+      </ul>
+
+      <div class="section-rule" style="margin-top: 2rem;"><span>Languages</span></div>
+      <ul class="contact-list">
+        <li><span class="cl">Native</span><span>English, Spanish</span></li>
+        <li><span class="cl">Advanced</span><span>Italian</span></li>
+        <li><span class="cl">Proficient</span><span>French</span></li>
+        <li><span class="cl">Conversational</span><span>Portuguese</span></li>
+      </ul>
+
+      <div class="section-rule" style="margin-top: 2rem;"><span>Other</span></div>
+      <ul class="contact-list">
+        <li><span class="cl">Mentorship</span><span>Startmate Launch Club</span></li>
+        <li><span class="cl">Courses</span><span>Startmate First Believers (Angel Investing), Manager Fellowship</span></li>
+        <li><span class="cl">Interests</span><span>Reading, music, history, swimming</span></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SKILLS TAB ══ -->
+<div id="tab-skills" class="page">
+
+  <p class="skills-intro">Tracking my developing literacy across the human data operations and frontier AI research landscape — the knowledge base for a data program manager role at a top lab. Tap any tag to cycle its interest level.</p>
+
+  <div id="skills-container">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="add-skill-row">
+    <input type="text" id="new-skill-input" placeholder="Add a skill or topic…" onkeydown="if(event.key==='Enter') addSkill()" />
+    <select id="new-skill-level">
+      <option value="high">High interest</option>
+      <option value="mid" selected>Medium interest</option>
+      <option value="low">Exploring</option>
+    </select>
+    <button onclick="addSkill()">Add</button>
+  </div>
+
+  <div class="tag-legend">
+    <span><span class="legend-dot high"></span> High interest / active focus</span>
+    <span><span class="legend-dot mid"></span> Medium / building knowledge</span>
+    <span><span class="legend-dot low"></span> Exploring / early stage</span>
+  </div>
+
+</div>
+
+<script>
+// ── Week utils ──────────────────────────────────────────────
+function getISOWeek(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return { week: Math.ceil((((date - yearStart) / 86400000) + 1) / 7), year: date.getUTCFullYear() };
+}
+function currentWeekKey() {
+  const { week, year } = getISOWeek(new Date());
+  return `${year}-W${String(week).padStart(2, '0')}`;
+}
+function weekLabel(key) {
+  const [year, w] = key.split('-W');
+  return `Issue ${w} · ${year}`;
+}
+
+// ── Tab navigation ───────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── Sections config ──────────────────────────────────────────
+const SECTIONS = [
+  {
+    id: 'frontier', label: 'Frontier Labs', color: '#1a1a18',
+    orgs: 'Anthropic, OpenAI, Google DeepMind, Meta AI, Mistral, xAI',
+    focus: 'Major model releases, safety research, capability advances, org announcements'
+  },
+  {
+    id: 'paradigms', label: 'Paradigm Clusters', color: '#0d6e56',
+    orgs: 'World Labs, AMI, Decart (world models); Recursive, Inherent (self-improvement); Ineffable Intelligence, Reflection (RL); Core Automation, Adaption Labs (continual learning); Inception Labs (diffusion); Logical Intelligence, Flapping Airplanes (EBMs)',
+    focus: 'Research advances in world models, recursive self-improvement, RL, continual learning, diffusion models, energy-based models'
+  },
+  {
+    id: 'human_data', label: 'Human Data & Operations', color: '#c17f24',
+    orgs: 'Scale AI, Surge, Labelbox, Appen, Prolific, Mostly AI, Gretel, LMSYS, EleutherAI, EU AI Office, NIST, Partnership on AI',
+    focus: 'Annotation pipelines, RLHF/RLAIF advances, synthetic data, evals design, AI governance, data quality frameworks'
+  },
+  {
+    id: 'jobs', label: 'Job Market', color: '#534ab7',
+    orgs: 'Anthropic, OpenAI, Google DeepMind, Meta AI, Scale AI, Cohere, Mistral',
+    focus: 'Data program manager, human data operations, annotation program manager, RLHF program manager roles — new postings, requirements, hiring signals'
+  }
+];
+
+// ── Generate digest ──────────────────────────────────────────
+async function generateDigest() {
+  const weekKey = currentWeekKey();
+  const btn = document.getElementById('gen-btn');
+  const loading = document.getElementById('loading-state');
+  const errEl = document.getElementById('error-state');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  loading.style.display = 'block';
+  errEl.style.display = 'none';
+  document.getElementById('digest-display').classList.remove('visible');
+  document.getElementById('archive-panel').style.display = 'none';
+
+  const systemPrompt = `You are a research analyst specialising in frontier AI labs, human data operations, and the AI job market. You produce a structured weekly digest for a senior strategy and operations professional targeting data program manager roles at frontier AI labs.
+
+Return ONLY valid JSON, no preamble, no markdown fences. Structure:
+{
+  "week": "<week key>",
+  "summary": "<2-3 sentence editorial summary of the week's most important themes>",
+  "sections": [
+    {
+      "id": "<section id>",
+      "label": "<section label>",
+      "findings": [
+        {
+          "title": "<finding headline>",
+          "source": "<publication or org name>",
+          "url": "<url if available, else null>",
+          "detail": "<2-3 sentence summary of the finding>",
+          "data_angle": "<1 sentence on relevance to human data operations or data program management, or null if not applicable>"
+        }
+      ]
+    }
+  ]
+}
+
+Include 3-5 findings per section. For the Job Market section, each finding is a job posting or hiring signal — include role title, company, and any notable requirements.`;
+
+  const userPrompt = `Generate the weekly AI research digest for ${weekKey} (week ending ${new Date().toDateString()}).
+
+Cover these four sections:
+${SECTIONS.map(s => `
+Section id: ${s.id}
+Section label: ${s.label}
+Organisations to track: ${s.orgs}
+Focus: ${s.focus}`).join('\n')}
+
+Use web search to find the most recent developments (last 7 days where possible). Highlight anything with a 📌 data angle — i.e. relevance to human data programs, annotation operations, RLHF pipelines, synthetic data, or evals.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+
+    // Extract JSON from response
+    const textBlocks = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    let digest;
+    try {
+      digest = JSON.parse(textBlocks.replace(/```json|```/g, '').trim());
+    } catch {
+      const match = textBlocks.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('Could not parse response as JSON');
+      digest = JSON.parse(match[0]);
+    }
+
+    digest.week = weekKey;
+    digest.generated = new Date().toISOString();
+
+    // Save to localStorage
+    const saved = getSavedDigests();
+    saved[weekKey] = digest;
+    localStorage.setItem('digests', JSON.stringify(saved));
+
+    renderDigest(digest);
+    loading.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = 'Regenerate this week';
+
+  } catch (err) {
+    loading.style.display = 'none';
+    errEl.style.display = 'block';
+    errEl.textContent = `Error generating digest: ${err.message}`;
+    btn.disabled = false;
+    btn.textContent = 'Generate this week\'s digest';
+    document.getElementById('archive-panel').style.display = 'block';
+  }
+}
+
+// ── Render digest ────────────────────────────────────────────
+function renderDigest(digest) {
+  const el = document.getElementById('digest-display');
+  const sectionColors = Object.fromEntries(SECTIONS.map(s => [s.id, s.color]));
+
+  let html = `
+    <div class="digest-header">
+      <div class="issue-line">
+        <span>${weekLabel(digest.week)}</span>
+        <span>Generated ${new Date(digest.generated).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}</span>
+      </div>
+      <h2>Weekly AI Research Digest</h2>
+      ${digest.summary ? `<div class="digest-summary">${digest.summary}</div>` : ''}
+    </div>`;
+
+  (digest.sections || []).forEach((section, i) => {
+    const isJobs = section.id === 'jobs';
+    html += `
+      <div class="digest-section">
+        <div class="digest-section-header ${i === 0 ? 'open' : ''}" onclick="toggleSection(this)">
+          <h3>${section.label}</h3>
+          <span class="chevron">&#8964;</span>
+        </div>
+        <div class="digest-section-body ${i === 0 ? 'open' : ''}">`;
+
+    (section.findings || []).forEach(f => {
+      if (isJobs) {
+        html += `
+          <div class="job-card">
+            <div class="job-title">${f.url ? `<a href="${f.url}" target="_blank">${f.title}</a>` : f.title}</div>
+            <div class="job-meta">${f.source}</div>
+            <div class="job-detail">${f.detail}</div>
+            ${f.data_angle ? `<div class="data-angle">📌 ${f.data_angle}</div>` : ''}
+          </div>`;
+      } else {
+        html += `
+          <div class="finding-card">
+            <div class="finding-source">${f.source}</div>
+            <div class="finding-title">${f.url ? `<a href="${f.url}" target="_blank">${f.title}</a>` : f.title}</div>
+            <div class="finding-detail">${f.detail}</div>
+            ${f.data_angle ? `<div class="data-angle">📌 ${f.data_angle}</div>` : ''}
+          </div>`;
+      }
+    });
+
+    html += `</div></div>`;
+  });
+
+  el.innerHTML = html;
+  el.classList.add('visible');
+  document.getElementById('archive-panel').style.display = 'none';
+}
+
+function toggleSection(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ── Archive ──────────────────────────────────────────────────
+function getSavedDigests() {
+  try { return JSON.parse(localStorage.getItem('digests') || '{}'); } catch { return {}; }
+}
+
+function showArchive() {
+  const saved = getSavedDigests();
+  const el = document.getElementById('archive-list');
+  const keys = Object.keys(saved).sort().reverse();
+
+  if (!keys.length) {
+    el.innerHTML = `<div class="empty-archive"><p>No digests saved yet.</p><small>Generate your first digest above to start building your archive.</small></div>`;
+  } else {
+    el.innerHTML = keys.map(k => {
+      const d = saved[k];
+      const sum = d.summary ? d.summary.substring(0, 80) + '…' : '';
+      return `<div class="archive-item" onclick="loadDigest('${k}')">
+        <div>
+          <div class="week-key">${weekLabel(k)}</div>
+          <div class="week-sum">${sum}</div>
+        </div>
+        <span class="week-arrow">→</span>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('archive-panel').style.display = 'block';
+  document.getElementById('digest-display').classList.remove('visible');
+}
+
+function loadDigest(key) {
+  const saved = getSavedDigests();
+  if (saved[key]) renderDigest(saved[key]);
+}
+
+// ── Bio editing ──────────────────────────────────────────────
+const DEFAULT_BIO = `Versatile strategy and operations leader with a track record of end-to-end ownership across two international founding teams, scaling from zero to ~A$50M in annual GBV. Currently optimising Turo's $2Bn GMV P&L from San Francisco HQ, bringing together a background with P&L ownership, people leadership (teams of ~12), and hands-on SQL and AI workflow development. Targeting human data program manager roles at frontier AI labs, where my experience building operations from scratch, managing cross-functional programs, and working at the intersection of data quality and product outcomes translates directly to the annotation, RLHF, and scalable oversight challenges shaping the next generation of AI.`;
+
+function toggleBioEdit() {
+  const area = document.getElementById('bio-edit-area');
+  const saveBtn = document.getElementById('bio-save-btn');
+  const editBtn = document.getElementById('bio-edit-btn');
+  const text = document.getElementById('bio-text');
+  if (area.style.display === 'none' || !area.style.display) {
+    area.value = text.textContent;
+    area.style.display = 'block';
+    saveBtn.style.display = 'inline-block';
+    editBtn.textContent = 'Cancel';
+  } else {
+    area.style.display = 'none';
+    saveBtn.style.display = 'none';
+    editBtn.textContent = 'Edit bio';
+  }
+}
+
+function saveBio() {
+  const area = document.getElementById('bio-edit-area');
+  const text = document.getElementById('bio-text');
+  text.textContent = area.value;
+  localStorage.setItem('bio', area.value);
+  area.style.display = 'none';
+  document.getElementById('bio-save-btn').style.display = 'none';
+  document.getElementById('bio-edit-btn').textContent = 'Edit bio';
+}
+
+// ── Skills ───────────────────────────────────────────────────
+const DEFAULT_SKILLS = {
+  'Human Data Operations': [
+    { name: 'RLHF pipeline design', level: 'high' },
+    { name: 'Annotation quality frameworks', level: 'high' },
+    { name: 'Scalable oversight', level: 'mid' },
+    { name: 'Synthetic data pipelines', level: 'mid' },
+    { name: 'RLAIF & constitutional AI', level: 'mid' },
+    { name: 'Evals design', level: 'low' },
+    { name: 'Data labelling operations', level: 'high' },
+  ],
+  'Frontier Research': [
+    { name: 'World models', level: 'mid' },
+    { name: 'Recursive self-improvement', level: 'low' },
+    { name: 'Reinforcement learning', level: 'mid' },
+    { name: 'Continual learning', level: 'low' },
+    { name: 'Diffusion models', level: 'low' },
+    { name: 'Energy-based models', level: 'low' },
+  ],
+  'Program Management': [
+    { name: 'Cross-functional program leadership', level: 'high' },
+    { name: 'P&L ownership', level: 'high' },
+    { name: 'Vendor & BPO management', level: 'high' },
+    { name: 'Offshore outsourcing', level: 'high' },
+    { name: 'SQL & data analysis', level: 'mid' },
+    { name: 'AI workflow automation', level: 'mid' },
+    { name: 'OKR & MBR frameworks', level: 'high' },
+  ],
+  'AI Policy & Governance': [
+    { name: 'AI safety fundamentals', level: 'low' },
+    { name: 'EU AI Act', level: 'low' },
+    { name: 'NIST AI RMF', level: 'low' },
+    { name: 'Responsible AI practices', level: 'mid' },
+  ]
+};
+
+const LEVEL_CYCLE = ['high', 'mid', 'low'];
+
+function getSkills() {
+  try {
+    const s = localStorage.getItem('skills');
+    return s ? JSON.parse(s) : DEFAULT_SKILLS;
+  } catch { return DEFAULT_SKILLS; }
+}
+
+function saveSkills(skills) {
+  localStorage.setItem('skills', JSON.stringify(skills));
+}
+
+function renderSkills() {
+  const skills = getSkills();
+  const container = document.getElementById('skills-container');
+  container.innerHTML = Object.entries(skills).map(([group, tags]) => `
+    <div class="tag-group">
+      <h4>${group}</h4>
+      <div class="tags-wrap">
+        ${tags.map((t, i) => `
+          <span class="skill-tag" data-level="${t.level}" data-group="${group}" data-index="${i}" onclick="cycleSkill(this)">${t.name}</span>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function cycleSkill(el) {
+  const group = el.dataset.group;
+  const idx = parseInt(el.dataset.index);
+  const skills = getSkills();
+  const current = skills[group][idx].level;
+  const next = LEVEL_CYCLE[(LEVEL_CYCLE.indexOf(current) + 1) % LEVEL_CYCLE.length];
+  skills[group][idx].level = next;
+  saveSkills(skills);
+  renderSkills();
+}
+
+function addSkill() {
+  const input = document.getElementById('new-skill-input');
+  const level = document.getElementById('new-skill-level').value;
+  const name = input.value.trim();
+  if (!name) return;
+  const skills = getSkills();
+  const group = 'Human Data Operations';
+  if (!skills[group]) skills[group] = [];
+  skills[group].push({ name, level });
+  saveSkills(skills);
+  renderSkills();
+  input.value = '';
+}
+
+// ── Init ─────────────────────────────────────────────────────
+(function init() {
+  const wk = currentWeekKey();
+  document.getElementById('masthead-week').textContent = weekLabel(wk);
+  document.getElementById('current-week-label').textContent = wk;
+
+  // Restore bio
+  const savedBio = localStorage.getItem('bio');
+  if (savedBio) document.getElementById('bio-text').textContent = savedBio;
+
+  // Render skills
+  renderSkills();
+
+  // Show archive on digest tab load
+  showArchive();
+})();
+</script>
+</body>
+</html>
