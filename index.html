@@ -74,9 +74,9 @@ html,body{font-size:16px;background:var(--cream);color:var(--text);font-family:v
 .home-section:last-child{border-bottom:none;}
 
 .section-eyebrow{
-  font-family:var(--sans);font-size:9.5px;font-weight:700;
-  letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--text-light);margin-bottom:1.25rem;
+  font-family:var(--sans);font-size:11.5px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text);margin-bottom:1.25rem;
 }
 
 /* ── Career journey ── */
@@ -131,37 +131,13 @@ html,body{font-size:16px;background:var(--cream);color:var(--text);font-family:v
 }
 
 /* ── Interests ── */
-.interests-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:2rem;
-}
-.interest-col h4{
-  font-family:var(--sans);font-size:9.5px;font-weight:700;
-  letter-spacing:0.12em;text-transform:uppercase;
-  color:var(--text-light);
-  margin-bottom:0.9rem;
-  padding-bottom:0.4rem;
-  border-bottom:1px solid var(--green-rule);
-}
-.interest-list{
-  display:flex;flex-direction:column;gap:0;
-}
-.interest-item{
-  display:flex;align-items:center;gap:0.65rem;
-  padding:0.45rem 0;
-  border-bottom:1px solid var(--cream-dark);
-  font-size:13.5px;color:var(--text);
-}
-.interest-item:last-child{border-bottom:none;}
-.interest-item::before{
-  content:"";
-  width:5px;height:5px;border-radius:50%;
-  background:var(--green-rule);flex-shrink:0;
-  transition:background 0.2s;
-}
-.interest-item:hover::before{background:var(--green);}
-.interest-item:hover{color:var(--green);}
+
+
+
+
+
+
+
 
 /* ══ INNER PAGES ══ */
 .inner-page{display:none;background:var(--cream);min-height:100vh;}
@@ -236,64 +212,13 @@ html,body{font-size:16px;background:var(--cream);color:var(--text);font-family:v
   .interests-grid{grid-template-columns:1fr;gap:1.5rem;}
 }
 
-.interest-list.roles .interest-item{
-  display:grid;grid-template-columns:140px 1fr;
-  gap:0 1.25rem;align-items:start;padding:0.65rem 0;
-}
-.interest-list.roles .interest-item::before{display:none;}
+
+
 .role-name{font-size:13.5px;color:var(--text);font-weight:600;padding-top:1px;line-height:1.4;}
 .role-blurb{font-family:var(--serif);font-size:12px;font-style:italic;color:var(--text-light);line-height:1.55;}
-.interest-list.roles .interest-item:hover .role-name{color:var(--green);}
 
-/* ── Matrix ── */
-.matrix-wrap{overflow-x:auto;}
-.matrix{
-  width:100%;border-collapse:collapse;
-  font-size:12px;
-}
-.matrix thead th{
-  font-family:var(--sans);font-size:9px;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--text-light);
-  padding:0 0.75rem 0.75rem;
-  text-align:center;
-  border-bottom:1px solid var(--green-rule);
-  white-space:nowrap;
-}
-.matrix thead th.col-role{
-  text-align:left;padding-left:0;min-width:150px;
-}
-.matrix tbody tr{
-  border-bottom:1px solid var(--cream-dark);
-  transition:background 0.15s;
-}
-.matrix tbody tr:last-child{border-bottom:none;}
-.matrix tbody tr:hover{background:var(--green-faint);}
-.matrix td{padding:0.7rem 0.75rem;vertical-align:middle;text-align:center;}
-.matrix td.col-role{
-  text-align:left;padding-left:0;
-  font-family:var(--sans);font-size:13px;font-weight:600;
-  color:var(--text);white-space:nowrap;
-}
-.matrix td.col-role .role-desc{
-  display:block;font-family:var(--serif);font-size:11px;
-  font-style:italic;font-weight:400;
-  color:var(--text-light);margin-top:1px;line-height:1.4;
-}
-.matrix-dot{
-  display:inline-block;
-  width:8px;height:8px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 0 2px var(--green-faint);
-}
-.matrix-empty{
-  display:inline-block;
-  width:8px;height:8px;border-radius:50%;
-  background:var(--green-rule);opacity:0.4;
-}
-.matrix-ind-header{
-  display:flex;align-items:center;justify-content:center;gap:0.3rem;
-}
+
+
 
 .home-nav-section{position:relative;}.home-nav .home-nav-section:first-child{padding-bottom:0.5rem;}
 
@@ -378,6 +303,25 @@ html,body{font-size:16px;background:var(--cream);color:var(--text);font-family:v
   font-family:var(--serif);font-size:14.5px;line-height:1.8;
   color:var(--text-mid);margin-bottom:1.75rem;max-width:600px;
 }
+
+.pills-section{display:flex;flex-direction:column;gap:1.25rem;}
+.pills-row{display:flex;align-items:baseline;gap:1rem;}
+.pills-label{
+  font-family:var(--sans);font-size:9.5px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text-light);white-space:nowrap;min-width:70px;
+}
+.pills-wrap{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.pill{
+  font-family:var(--sans);font-size:12px;
+  color:var(--text-mid);
+  border:1px solid var(--green-rule);
+  border-radius:20px;
+  padding:0.25rem 0.75rem;
+  transition:border-color 0.15s,color 0.15s;
+  cursor:default;
+}
+.pill:hover{border-color:var(--green);color:var(--green);}
 </style>
 </head>
 <body>
@@ -469,74 +413,31 @@ html,body{font-size:16px;background:var(--cream);color:var(--text);font-family:v
                   <!-- Section 2: What I'm looking for -->
       <div class="home-section" id="section-looking">
         <div class="section-eyebrow">What I'm Looking For Next</div>
-        <div class="matrix-wrap">
-          <table class="matrix">
-            <thead>
-              <tr>
-                <th class="col-role">Role</th>
-                <th>Frontier AI</th>
-                <th>Robotics</th>
-                <th>Energy</th>
-                <th>Other<br>Seed&#8209;to&#8209;Series&nbsp;B</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="col-role">
-                  General Manager
-                  <span class="role-desc">P&amp;L ownership, team building, full operating accountability</span>
-                </td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-              </tr>
-              <tr>
-                <td class="col-role">
-                  Program Manager
-                  <span class="role-desc">Cross-functional execution, human data pipelines, ops at scale</span>
-                </td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-empty"></span></td>
-              </tr>
-              <tr>
-                <td class="col-role">
-                  Chief of Staff
-                  <span class="role-desc">Strategic synthesis, executive leverage, org-wide coordination</span>
-                </td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-              </tr>
-              <tr>
-                <td class="col-role">
-                  Head of Operations
-                  <span class="role-desc">Launching ops from scratch, P&amp;L ownership, service excellence</span>
-                </td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-              </tr>
-              <tr>
-                <td class="col-role">
-                  Strategy &amp; Planning
-                  <span class="role-desc">P&amp;L optimisation, roadmaps, board-ready outputs</span>
-                </td>
-                <td><span class="matrix-empty"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-                <td><span class="matrix-dot"></span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="pills-section">
+          <div class="pills-row">
+            <div class="pills-label">Industries</div>
+            <div class="pills-wrap">
+              <span class="pill">Frontier AI</span>
+              <span class="pill">AI Transformation</span>
+              <span class="pill">Robotics</span>
+              <span class="pill">Energy</span>
+              <span class="pill">Other Seed to Series B</span>
+            </div>
+          </div>
+          <div class="pills-row">
+            <div class="pills-label">Roles</div>
+            <div class="pills-wrap">
+              <span class="pill">General Manager</span>
+              <span class="pill">Program Manager</span>
+              <span class="pill">Chief of Staff</span>
+              <span class="pill">Head of Operations</span>
+              <span class="pill">Strategy &amp; Planning</span>
+            </div>
+          </div>
         </div>
-      </div>
-
-    </div>
+          </div>
+          
+        </div>
   </div>
 </div>
       </div>
